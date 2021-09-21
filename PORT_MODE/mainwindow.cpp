@@ -11,6 +11,7 @@
 //gif
 #include <QLabel>
 #include <QMovie>
+
 //page
 #include <QStackedWidget>
 #include <qwidget.h>
@@ -20,6 +21,7 @@
 //personal
 #include <QKeyEvent>
 #include <camera.h>
+#include <fix.h>
 
 
 /*---------------------------------gui界面测试部分-----------------------
@@ -68,7 +70,6 @@ void MainWindow::window_init()
         "#label{background:rgba(255,255,0,1.0);}"
         "#page1{background:rgba(0,0,0,1.0);}"
         "#whether{border-image:url(:/icon/cloud.png);}"
-        "#pushButton_3{border-image:url(:/icon/btn3.svg);}"
         "#groupBox_3{border:none}"     //用于消除边框
         "#groupBox_2{border:none}"
        );
@@ -93,8 +94,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         QApplication* app;
         app->quit();
         break;
-    case Qt::Key_Right:
+    case Qt::Key_A:
         change_to_camera();
+        break;
+    case Qt::Key_B:
+        change_to_fix();
         break;
     default:
         break;
@@ -164,17 +168,7 @@ void MainWindow::qmovie_setup(void)
 
 
 
-/*---------------------------------------------------
- * 页面切换(转到下一页面)
- * ------------------------------------------------*/
-void MainWindow::change_to_camera()
-{
-    camera *win2;
-    win2 = new camera;
-    this->hide();
-    win2->show();
 
-}
 
 /*--------------------------------------------------
  * 时间设定函数接口
@@ -216,3 +210,57 @@ void MainWindow::temperature_set(QString current_temp)
 }
 
 
+
+
+//PAGE
+
+/*--------------------------------------------
+ * 切换到下一界面
+ * ---------------------------------------------*/
+void MainWindow::change_to_fix()
+{
+    //fix *win3 = new fix;
+    //this->hide();
+    ui->widget->hide();
+    win2->hide();
+    win3->show();
+
+
+}
+
+
+/*---------------------------------------------------
+ *以下是页面切换及功能指令（用串口替换）
+ * ------------------------------------------------*/
+void MainWindow::change_to_camera()
+{
+//    camera *win2;
+//    win2 = new camera;
+    //this->hide();
+    ui->widget->hide();
+    win3->hide();
+    win2->show();
+
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    change_to_camera();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    change_to_fix();
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+      win3->pic_change(1);
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    win3->pic_change(0);
+}

@@ -15,17 +15,18 @@ class fix : public QWidget
 
 public:
     explicit fix(QWidget *parent = 0);
+    void pic_change(int up_or_down);
+
     ~fix();
 
 private slots:
-    void change_to_back();
-    void keyPressEvent(QKeyEvent *event);
+//    void change_to_back();
+//    void keyPressEvent(QKeyEvent *event);
     //personal
 
     void window3_init();
     void font3_setup(void);
     void pic_set(QLabel *label,QString fileaddress);
-    void pic_change(int up_or_down);
 
 
 private:

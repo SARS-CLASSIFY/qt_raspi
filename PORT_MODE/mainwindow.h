@@ -19,6 +19,9 @@
 
 
 
+#include <camera.h>
+#include <fix.h>
+
 namespace Ui {
 class MainWindow;
 }
@@ -41,11 +44,19 @@ private slots:
 
     //页面切换
     void change_to_camera();
-
+    void change_to_fix();
     //时间日期及温度设定接口函数
     void time_set(QString current_time);
     void date_set(QString current_date);
     void temperature_set(QString current_temp);
+    //指令控制相关函数
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -57,7 +68,8 @@ private:
     QMovie *showGif;
     QImage *whether_img;
     /*----页面切换------*/
-
+    fix *win3 = new fix;
+    camera *win2 = new camera;
 
 };
 

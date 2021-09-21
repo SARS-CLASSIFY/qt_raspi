@@ -53,12 +53,12 @@ fix::~fix()
 /*---------------------------------------------
  * 返回上一界面
  * ------------------------------------------*/
-void fix::change_to_back()
-{
-    camera *win2 = new camera;
-    this->hide();
-    win2->show();
-}
+//void fix::change_to_back()
+//{
+//    camera *win2 = new camera;
+//    this->hide();
+//    win2->show();
+//}
 
 
 
@@ -168,31 +168,31 @@ void fix::pic_change(int up_or_down)
 /*-----------------------------------------------
  * 按键响应函数（调试使用）
  * -----------------------------------------------*/
-void fix::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    //判断ESC按键事件
-    case Qt::Key_Escape:
-        qDebug()<<"esc"<<endl;
-        break;
-    //del键用于退出 全屏调试使用
-    case Qt::Key_Delete:
-        QApplication* app;
-        app->quit();
-        break;
-    case Qt::Key_Left://按下左键
-        change_to_back();
-        break;
-    case Qt::Key_Right:
-        //change_to_next();
-        break;
-    case Qt::Key_Up:
-        pic_change(1);
-        break;
-    case Qt::Key_Down:
-        pic_change(0);
-        break;
-    default:
-        break;
-    }
-}
+//void fix::keyPressEvent(QKeyEvent *event)
+//{
+//    switch (event->key()) {
+//    //判断ESC按键事件
+//    case Qt::Key_Escape:
+//        qDebug()<<"esc"<<endl;
+//        break;
+//    //del键用于退出 全屏调试使用
+//    case Qt::Key_Delete:
+//        QApplication* app;
+//        app->quit();
+//        break;
+//    case Qt::Key_Left://按下左键
+//        change_to_back();
+//        break;
+//    case Qt::Key_Right:
+//        //change_to_next();
+//        break;
+//    case Qt::Key_Up:
+//        pic_change(1);
+//        break;
+//    case Qt::Key_Down:
+//        pic_change(0);
+//        break;
+//    default:
+//        break;
+//    }
+//}
