@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ALiHanYiZhiNengHeiTi-2.ttf</file>
+        <file>gif1.gif</file>
+        <file>icon/drop-f.svg</file>
+        <file>icon/moon-1-f.svg</file>
+        <file>icon/mostly-cloudy-1-f.svg</file>
+        <file>icon/rain-night-f.svg</file>
+        <file>icon/snow-day-1-f.svg</file>
+        <file>icon/umbrella-f.svg</file>
+        <file>icon/wind-cone-f.svg</file>
+        <file>icon/cloud.png</file>
+        <file>icon/raining.png</file>
+        <file>icon/camera.png</file>
+        <file>icon/camera1.svg</file>
+        <file>icon/btn1.svg</file>
+        <file>icon/btn2.svg</file>
+        <file>icon/btn3.svg</file>
+        <file>resourses/1.jpeg</file>
+        <file>resourses/2.jpeg</file>
+        <file>resourses/3.jpeg</file>
+        <file>resourses/4.jpeg</file>
+        <file>resourses/5.jpg</file>
+    </qresource>
+</RCC>
