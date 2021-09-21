@@ -22,6 +22,21 @@
 #include <camera.h>
 #include <fix.h>
 
+//weather
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
+
+//sys time
+
+#include <QTimer>
+#include <qdatetime.h>
+
 namespace Ui {
 class MainWindow;
 }
@@ -45,6 +60,7 @@ private slots:
     //页面切换
     void change_to_camera();
     void change_to_fix();
+    void init_window();
     //时间日期及温度设定接口函数
     void time_set(QString current_time);
     void date_set(QString current_date);
@@ -58,6 +74,14 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+    //天气
+    void checkW();
+    void replyFinished(QNetworkReply *reply);
+    //时间
+    void timerUpdate(void);
+
+    void on_pushButton_6_clicked();
+
 private:
     Ui::MainWindow *ui;
     //personal
@@ -70,6 +94,11 @@ private:
     /*----页面切换------*/
     fix *win3 = new fix;
     camera *win2 = new camera;
+    //天气
+    QNetworkAccessManager *manager;  //请求句柄
+    QString fengli;       //风力
+    QString wendu;        //温度
+    QString weather_type;  //天气类型
 
 };
 

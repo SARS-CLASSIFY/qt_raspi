@@ -40,6 +40,16 @@ MainWindow::MainWindow(QWidget *parent) :
     window_init();
 //    fullscreen();//全屏显示
 
+    //天气
+    manager = new QNetworkAccessManager(this);  //新建QNetworkAccessManager对象
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));//关联信号和槽
+    connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(checkW()));//关联信号和槽
+
+    //系统时间
+    QTimer *timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(timerUpdate()));
+    timer->start(1000);
+
 }
 
 MainWindow::~MainWindow()
@@ -137,17 +147,12 @@ void MainWindow::font_setup(void)
     date_set("9月14日");
 
     //时间设置
-//    int t1 =8,t2=22;
-//    QString current_time;
-//    current_time+=QString::number(t1)+":"+QString::number(t2);
     time_set("8:23");
 
-    //温度设置
-//    int tp = 23;
-//    QString current_temp;
-//    current_temp+=QString::number(tp)+"℃";
+    //温度及天气设置
      temperature_set("20℃");
-
+     ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
+     ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
 }
 
 
@@ -179,8 +184,8 @@ void MainWindow::time_set(QString current_time)
 //    int t1 =8,t2=22;
 //    QString current_time;
 //    current_time+=QString::number(t1)+":"+QString::number(t2);
-    ui->c_time->setFont(font);
-    ui->c_time->setStyleSheet("background-color: rgb(0, 0, 0);font-size:40px;color:rgb(192,192,192)");
+    //ui->c_time->setFont(font);
+    ui->c_time->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->c_time->setText(current_time);
 
 }
@@ -190,10 +195,10 @@ void MainWindow::time_set(QString current_time)
  * ------------------------------------------------*/
 void MainWindow::date_set(QString current_date)
 {
-    ui->date->setFont(font);//日期
-    ui->date->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:white");
+//    //ui->date->setFont(font);//日期
+//    ui->date->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:white");
 //    ui->date->setText("星期日\n8月23日");
-    ui->date->setText(current_date);
+//    ui->date->setText(current_date);
 }
 
 /*-------------------------------------------------
@@ -204,7 +209,7 @@ void MainWindow::temperature_set(QString current_temp)
     //非qstring型可以如下转换
 //    int tp = 23;
 //    current_temp+=QString::number(tp)+"℃";
-    ui->temperature->setFont(font);
+    //ui->temperature->setFont(font);
     ui->temperature->setStyleSheet("background-color: rgb(0, 0, 0);font-size:25px;color:rgb(192,192,192)");
     ui->temperature->setText(current_temp);
 }
@@ -243,6 +248,17 @@ void MainWindow::change_to_camera()
 
 }
 
+/*--------------------------------------------------
+ * 切换到初始界面
+ * --------------------------------------------------*/
+void MainWindow:: init_window()
+{
+    win3->hide();
+    win2->hide();
+    ui->widget->show();
+
+}
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -254,6 +270,10 @@ void MainWindow::on_pushButton_2_clicked()
     change_to_fix();
 }
 
+void MainWindow::on_pushButton_6_clicked()
+{
+    init_window();
+}
 
 void MainWindow::on_pushButton_3_clicked()
 {
@@ -264,3 +284,85 @@ void MainWindow::on_pushButton_4_clicked()
 {
     win3->pic_change(0);
 }
+
+
+/*-----------------------------------------------------------------------------------
+ * 天气及时间显示部分
+ * ------------------------------------------------------------------------------*/
+void MainWindow::checkW() //点击查询请求天气数据
+{
+    QString local_city = "杭州" ;//获得需要查询天气的城市名称
+    char quest_array[256] = "http://wthrcdn.etouch.cn/weather_mini?city=";
+    QNetworkRequest quest;
+    sprintf(quest_array, "%s%s", quest_array, local_city.toUtf8().data());
+    quest.setUrl(QUrl(quest_array));
+    quest.setHeader(QNetworkRequest::UserAgentHeader, "RT-Thread ART");
+    /*发送get网络请求*/
+    manager->get(quest);
+}
+
+void MainWindow::replyFinished(QNetworkReply *reply)  //天气数据处理槽函数
+{
+    qDebug() << "recv weather data!!";
+    QString all = reply->readAll();
+
+    //ui->textBrowser->setText(all); //将接收到的数据显示出来
+
+    QJsonParseError err;
+    QJsonDocument json_recv = QJsonDocument::fromJson(all.toUtf8(), &err);//解析json对象
+    qDebug() << err.error;
+    if (!json_recv.isNull())
+    {
+        QJsonObject object = json_recv.object();
+
+        if (object.contains("data"))
+        {
+            QJsonValue value = object.value("data");  // 获取指定 key 对应的 value
+            if (value.isObject())
+            {
+                QJsonObject object_data = value.toObject();
+                if (object_data.contains("forecast"))
+                {
+                    QJsonValue value = object_data.value("forecast");
+                    if (value.isArray())
+                    {
+                        QJsonObject today_weather = value.toArray().at(0).toObject();
+                        weather_type = today_weather.value("type").toString();
+
+                        QString tuijian = object.value("data").toObject().value("ganmao").toString();
+                        QString low = today_weather.value("low").toString();
+                        QString high = today_weather.value("high").toString();
+                        wendu = low.mid(low.length() - 3, 4) + "~" + high.mid(high.length() - 3, 4);
+                        QString strength = today_weather.value("fengli").toString();
+                        strength.remove(0, 8);
+                        strength.remove(strength.length() - 2, 2);
+                        fengli = today_weather.value("fengxiang").toString() + strength;
+
+                        ui->type->setText(weather_type); //显示天气类型
+                        ui->temperature->setText(wendu);   //显示温度
+                        ui->fengli->setText(fengli); //显示风力
+                    }
+                }
+            }
+        }
+
+    }
+    else
+    {
+        qDebug() << "json_recv is NULL or is not a object !!";
+    }
+    reply->deleteLater(); //销毁请求对象
+}
+
+//获取当前时间
+
+void MainWindow::timerUpdate(void)
+{
+    QDateTime time = QDateTime::currentDateTime();
+    QString str = time.toString("yyyy\nMM-dd\nhh:mm:ss\ndddd");
+    ui->c_time->setText(str);
+}
+
+
+
+
