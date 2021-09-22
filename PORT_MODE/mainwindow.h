@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -18,7 +18,7 @@
 #include <QParallelAnimationGroup>
 
 
-
+#include <QSerialPort>
 #include <camera.h>
 #include <fix.h>
 
@@ -37,7 +37,8 @@
 #include <QTimer>
 #include <qdatetime.h>
 
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 
@@ -66,13 +67,13 @@ private slots:
     void date_set(QString current_date);
     void temperature_set(QString current_temp);
     //指令控制相关函数
-    void on_pushButton_clicked();
+    void on_nextButton_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_backButton_clicked();
 
-    void on_pushButton_3_clicked();
+    void on_upButton_clicked();
 
-    void on_pushButton_4_clicked();
+    void on_downButton_clicked();
 
     //天气
     void checkW();
@@ -82,6 +83,7 @@ private slots:
 
     void on_pushButton_6_clicked();
 
+    void onSerialReadyRead();
 private:
     Ui::MainWindow *ui;
     //personal
@@ -99,6 +101,9 @@ private:
     QString fengli;       //风力
     QString wendu;        //温度
     QString weather_type;  //天气类型
+
+    QByteArray serialBuf;
+    QSerialPort port;
 
 };
 
