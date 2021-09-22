@@ -228,28 +228,28 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="upButton">
        <property name="text">
         <string>up</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="downButton">
        <property name="text">
         <string>down</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="backButton">
        <property name="text">
         <string>back</string>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="nextButton">
        <property name="text">
         <string>next</string>
        </property>
@@ -293,7 +293,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="autoFillBackground">

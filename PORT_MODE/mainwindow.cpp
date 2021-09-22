@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 
@@ -22,6 +22,9 @@
 #include <QKeyEvent>
 #include <camera.h>
 #include <fix.h>
+
+//Debug output
+#include <QDebug>
 
 
 /*---------------------------------gui界面测试部分-----------------------
@@ -47,9 +50,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //系统时间
     QTimer *timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(timerUpdate()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
     timer->start(1000);
-
+    port.setBaudRate(115200);
+    port.setPortName("COM7");
+    port.setDataBits(QSerialPort::Data8);
+    port.setParity(QSerialPort::NoParity);
+    port.setFlowControl(QSerialPort::SoftwareControl);
+    port.setStopBits(QSerialPort::OneStop);
+    connect(&port, &QSerialPort::readyRead, this, &MainWindow::onSerialReadyRead);
+    qDebug() << port.open(QIODevice::ReadWrite);
 }
 
 MainWindow::~MainWindow()
@@ -77,12 +87,12 @@ void MainWindow::window_init()
     //背景设置
 //    this->setStyleSheet("#centralWidget{border-image:url(:/timg.jpg);}" //设置指定图片为背景
     this->setStyleSheet("#centralWidget{background:rgba(0,0,0,1);}" //设置主界面背景透明度
-        "#label{background:rgba(255,255,0,1.0);}"
-        "#page1{background:rgba(0,0,0,1.0);}"
-        "#whether{border-image:url(:/icon/cloud.png);}"
-        "#groupBox_3{border:none}"     //用于消除边框
-        "#groupBox_2{border:none}"
-       );
+                        "#label{background:rgba(255,255,0,1.0);}"
+                        "#page1{background:rgba(0,0,0,1.0);}"
+                        "#whether{border-image:url(:/icon/cloud.png);}"
+                        "#groupBox_3{border:none}"     //用于消除边框
+                        "#groupBox_2{border:none}"
+                       );
     //字体设置
     font_setup();
     //动图设置
@@ -94,7 +104,8 @@ void MainWindow::window_init()
  * ------------------------------------------------------*/
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key()) {
+    switch(event->key())
+    {
     //判断ESC按键事件
     case Qt::Key_Escape:
         QWidget::showNormal();
@@ -126,11 +137,11 @@ void MainWindow::font_setup(void)
 
     int lcdFontId = QFontDatabase::addApplicationFont(":/ALiHanYiZhiNengHeiTi-2.ttf"); // 从source资源文件
     // int lcdFontId = QFontDatabase::addApplicationFont(dir + "/fonts/DS-DIGI.ttf"); //从外部资源文件
-    if (lcdFontId != -1) // -1为加载失败
+    if(lcdFontId != -1)  // -1为加载失败
     {
         m_fontList << QFontDatabase::applicationFontFamilies(lcdFontId);
     }
-    if (!m_fontList.isEmpty())
+    if(!m_fontList.isEmpty())
     {
 
         font.setFamily(m_fontList.at(0));//设置字体样式
@@ -150,9 +161,9 @@ void MainWindow::font_setup(void)
     time_set("8:23");
 
     //温度及天气设置
-     temperature_set("20℃");
-     ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
-     ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
+    temperature_set("20℃");
+    ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
+    ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
 }
 
 
@@ -260,12 +271,12 @@ void MainWindow:: init_window()
 }
 
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_nextButton_clicked()
 {
     change_to_camera();
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_backButton_clicked()
 {
     change_to_fix();
 }
@@ -275,12 +286,12 @@ void MainWindow::on_pushButton_6_clicked()
     init_window();
 }
 
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_upButton_clicked()
 {
-      win3->pic_change(1);
+    win3->pic_change(1);
 }
 
-void MainWindow::on_pushButton_4_clicked()
+void MainWindow::on_downButton_clicked()
 {
     win3->pic_change(0);
 }
@@ -311,20 +322,20 @@ void MainWindow::replyFinished(QNetworkReply *reply)  //天气数据处理槽函
     QJsonParseError err;
     QJsonDocument json_recv = QJsonDocument::fromJson(all.toUtf8(), &err);//解析json对象
     qDebug() << err.error;
-    if (!json_recv.isNull())
+    if(!json_recv.isNull())
     {
         QJsonObject object = json_recv.object();
 
-        if (object.contains("data"))
+        if(object.contains("data"))
         {
             QJsonValue value = object.value("data");  // 获取指定 key 对应的 value
-            if (value.isObject())
+            if(value.isObject())
             {
                 QJsonObject object_data = value.toObject();
-                if (object_data.contains("forecast"))
+                if(object_data.contains("forecast"))
                 {
                     QJsonValue value = object_data.value("forecast");
-                    if (value.isArray())
+                    if(value.isArray())
                     {
                         QJsonObject today_weather = value.toArray().at(0).toObject();
                         weather_type = today_weather.value("type").toString();
@@ -363,6 +374,22 @@ void MainWindow::timerUpdate(void)
     ui->c_time->setText(str);
 }
 
-
+void MainWindow::onSerialReadyRead()
+{
+    serialBuf += port.readAll();
+    qDebug() << serialBuf;
+    if(serialBuf.endsWith('>'))
+    {
+        if(serialBuf == "1>")
+            on_nextButton_clicked();
+        else if(serialBuf == "2>")
+            on_backButton_clicked();
+        else if(serialBuf == "4>")
+            on_upButton_clicked();
+        else if(serialBuf == "8>")
+            on_downButton_clicked();
+        serialBuf.clear();
+    }
+}
 
 
