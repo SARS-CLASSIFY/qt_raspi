@@ -46,8 +46,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-MyUARTHandle uart3;
-uint8_t uartBuf3[100];
+MyUARTHandle uart2, uart3;
+uint8_t uartBuf2[100], uartBuf3[100];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,10 +94,12 @@ int main(void)
   MX_ETH_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   Delay_Init(64);
   MyUART_SetOStream(USART3);
   MyUART_Init(&uart3, USART3, uartBuf3, 100);
+  MyUART_Init(&uart2, USART2, uartBuf2, 100);
   printf("PAJ7620 Test\r\n");
   printf("Init: %d\r\n", PAJ7620_Init(GPIOF, 6, GPIOF, 7));
   /* USER CODE END 2 */
@@ -118,7 +120,7 @@ int main(void)
       //printf("Gesture: %s", gestureText[gesture]);
       printf("\r\n");
     }
-    if(MyUART_ReadUntilWithZero(&uart3, str, '>'))
+    if(MyUART_ReadUntilWithZero(&uart2, str, '>'))
       printf("%s\r\n", str);
   }
   /* USER CODE END 3 */
