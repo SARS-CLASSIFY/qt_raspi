@@ -1,0 +1,12 @@
+INPUT(
+./debug\qrc_resources.o
+./debug\main.o
+./debug\mainwindow.o
+./debug\camera.o
+./debug\fix.o
+./debug\music.o
+./debug\moc_mainwindow.o
+./debug\moc_camera.o
+./debug\moc_fix.o
+./debug\moc_music.o
+);

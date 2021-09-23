@@ -21,6 +21,7 @@
 #include <QSerialPort>
 #include <camera.h>
 #include <fix.h>
+#include <music.h>
 
 //weather
 #include <QtNetwork/QNetworkAccessManager>
@@ -61,29 +62,31 @@ private slots:
     //页面切换
     void change_to_camera();
     void change_to_fix();
+    void change_to_music();
     void init_window();
     //时间日期及温度设定接口函数
     void time_set(QString current_time);
     void date_set(QString current_date);
     void temperature_set(QString current_temp);
     //指令控制相关函数
-    void on_nextButton_clicked();
+//    void on_nextButton_clicked();
 
-    void on_backButton_clicked();
+//    void on_backButton_clicked();
 
-    void on_upButton_clicked();
+//    void on_upButton_clicked();
 
-    void on_downButton_clicked();
-
+//    void on_downButton_clicked();
+//    void on_pushButton_6_clicked();
     //天气
     void checkW();
     void replyFinished(QNetworkReply *reply);
     //时间
     void timerUpdate(void);
 
-    void on_pushButton_6_clicked();
+
 
     void onSerialReadyRead();
+
 private:
     Ui::MainWindow *ui;
     //personal
@@ -91,11 +94,12 @@ private:
     QStringList m_fontList;
     QFont font;
     /*----qmovie-------*/
-    QMovie *showGif;
+    QMovie *showGif,*showGif1;
     QImage *whether_img;
     /*----页面切换------*/
     fix *win3 = new fix;
     camera *win2 = new camera;
+    music *win4 = new music;
     //天气
     QNetworkAccessManager *manager;  //请求句柄
     QString fengli;       //风力
@@ -104,6 +108,8 @@ private:
 
     QByteArray serialBuf;
     QSerialPort port;
+
+    //界面绝对坐标
 
 };
 

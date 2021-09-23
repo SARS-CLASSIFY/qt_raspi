@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>600</height>
+    <width>603</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -100,10 +100,10 @@
      <widget class="QLabel" name="word">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>120</x>
         <y>10</y>
-        <width>591</width>
-        <height>181</height>
+        <width>331</width>
+        <height>71</height>
        </rect>
       </property>
       <property name="frameShadow">
@@ -119,10 +119,10 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>370</x>
-        <y>300</y>
-        <width>181</width>
-        <height>151</height>
+        <x>160</x>
+        <y>160</y>
+        <width>241</width>
+        <height>201</height>
        </rect>
       </property>
       <property name="text">
@@ -133,9 +133,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>230</y>
-        <width>878</width>
-        <height>16</height>
+        <y>100</y>
+        <width>594</width>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">

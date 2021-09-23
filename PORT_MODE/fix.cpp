@@ -30,7 +30,6 @@
 
 static int pic_num = 0;//图片切换序号
 
-
 fix::fix(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::fix)
@@ -39,7 +38,11 @@ fix::fix(QWidget *parent) :
 
     //private
     window3_init();
+    this->setWindowFlags(Qt::X11BypassWindowManagerHint  | Qt::FramelessWindowHint);
     pic_set(ui->label_img,addre2);
+
+    //移动到相应父窗口坐标点
+    this->move(122, 162);//窗口移动
 }
 
 fix::~fix()
@@ -83,14 +86,14 @@ void fix::font3_setup(void)
     {
 
         font.setFamily(m_fontList.at(0));//设置字体样式
-        font.setPixelSize(80);//设置字体大小
+        font.setPixelSize(50);//设置字体大小
         font.setBold(true);//斜体
     }
 
     //标签测试
     ui->word2->setFont(font);//主题
     ui->word2->setStyleSheet("background-color: rgb(0, 0, 0);font-size:50px;color:white");
-    ui->word2->setText("photo blum");
+//    ui->word2->setText("");
 
 
 }

@@ -22,6 +22,7 @@
 #include <QKeyEvent>
 #include <camera.h>
 #include <fix.h>
+#include <music.h>
 
 //Debug output
 #include <QDebug>
@@ -32,6 +33,7 @@
  * 布局可以根据后续需要进一步修改
  * 需要添加功能可以先创建基本控件，后续优化
  * --------------------------------------------------------------------*/
+//主窗口坐标
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -41,19 +43,23 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //界面初始化
     window_init();
-//    fullscreen();//全屏显示
+    //fullscreen();//全屏显示
+    //去掉窗口变框
+    this->setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
+    this->setGeometry(0,0,1024,600);
 
     //天气
     manager = new QNetworkAccessManager(this);  //新建QNetworkAccessManager对象
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));//关联信号和槽
-    connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(checkW()));//关联信号和槽
+    checkW();
+//    connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(checkW()));//关联信号和槽
 
     //系统时间
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
     timer->start(1000);
     port.setBaudRate(115200);
-    port.setPortName("COM7");
+    port.setPortName("COM1");
     port.setDataBits(QSerialPort::Data8);
     port.setParity(QSerialPort::NoParity);
     port.setFlowControl(QSerialPort::SoftwareControl);
@@ -92,6 +98,7 @@ void MainWindow::window_init()
                         "#whether{border-image:url(:/icon/cloud.png);}"
                         "#groupBox_3{border:none}"     //用于消除边框
                         "#groupBox_2{border:none}"
+                        "#groupBox{border:none}"
                        );
     //字体设置
     font_setup();
@@ -151,8 +158,8 @@ void MainWindow::font_setup(void)
 
     //标签测试
     ui->main_theam->setFont(font);//主题
-    ui->main_theam->setStyleSheet("background-color: rgb(0, 0, 0);font-size:30px;color:white");
-    ui->main_theam->setText("MAGIC MIRROR");
+    ui->main_theam->setStyleSheet("background-color: rgb(0, 0, 0);font-size:50px;color:white");
+//    ui->main_theam->setText("MAGIC MIRROR");
 
     //日期设置
     date_set("9月14日");
@@ -173,12 +180,19 @@ void MainWindow::font_setup(void)
 void MainWindow::qmovie_setup(void)
 {
     showGif = new QMovie(":/gif1.gif");
+    showGif1 = new QMovie(":/gif2.gif");
     //设置适应Qlabel大小
     QSize my_size = ui->labelGif->size();
     showGif->setScaledSize(my_size);
 
+    QSize my_size2 = ui->labelGif2->size();
+    showGif1->setScaledSize(my_size2);
+
     ui->labelGif->setMovie(showGif);
     showGif->start();
+
+    ui->labelGif2->setMovie(showGif1);
+    showGif1->start();
 
 }
 
@@ -237,8 +251,9 @@ void MainWindow::change_to_fix()
 {
     //fix *win3 = new fix;
     //this->hide();
-    ui->widget->hide();
+    ui->page1->hide();
     win2->hide();
+    win4->hide();
     win3->show();
 
 
@@ -253,9 +268,20 @@ void MainWindow::change_to_camera()
 //    camera *win2;
 //    win2 = new camera;
     //this->hide();
-    ui->widget->hide();
+    ui->page1->hide();
     win3->hide();
+    win4->hide();
     win2->show();
+
+}
+
+
+void MainWindow::change_to_music()
+{
+    ui->page1->hide();
+    win3->hide();
+    win2->hide();
+    win4->show();
 
 }
 
@@ -271,30 +297,30 @@ void MainWindow:: init_window()
 }
 
 
-void MainWindow::on_nextButton_clicked()
-{
-    change_to_camera();
-}
+//void MainWindow::on_nextButton_clicked()
+//{
+//    change_to_camera();
+//}
 
-void MainWindow::on_backButton_clicked()
-{
-    change_to_fix();
-}
+//void MainWindow::on_backButton_clicked()
+//{
+//    change_to_fix();
+//}
 
-void MainWindow::on_pushButton_6_clicked()
-{
-    init_window();
-}
+//void MainWindow::on_pushButton_6_clicked()
+//{
+//    init_window();
+//}
 
-void MainWindow::on_upButton_clicked()
-{
-    win3->pic_change(1);
-}
+//void MainWindow::on_upButton_clicked()
+//{
+//    win3->pic_change(1);
+//}
 
-void MainWindow::on_downButton_clicked()
-{
-    win3->pic_change(0);
-}
+//void MainWindow::on_downButton_clicked()
+//{
+//    win3->pic_change(0);
+//}
 
 
 /*-----------------------------------------------------------------------------------
@@ -381,13 +407,19 @@ void MainWindow::onSerialReadyRead()
     if(serialBuf.endsWith('>'))
     {
         if(serialBuf == "1>")
-            on_nextButton_clicked();
+            change_to_camera();
         else if(serialBuf == "2>")
-            on_backButton_clicked();
+            change_to_fix();
+        else if(serialBuf == "3>")
+            change_to_music();
         else if(serialBuf == "4>")
-            on_upButton_clicked();
+            win3->pic_change(1);
         else if(serialBuf == "8>")
-            on_downButton_clicked();
+            win3->pic_change(0);
+        else if(serialBuf == "10>")//回到初始界面
+            init_window();
+        else if(serialBuf == "get>")//获取天气信息
+            checkW();
         serialBuf.clear();
     }
 }

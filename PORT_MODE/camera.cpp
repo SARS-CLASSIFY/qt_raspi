@@ -27,6 +27,9 @@ camera::camera(QWidget *parent) :
 {
     ui->setupUi(this);
     window2_init();
+    this->setWindowFlags(Qt::X11BypassWindowManagerHint  | Qt::FramelessWindowHint);
+
+    this->move(122, 162);//窗口移动
 }
 
 camera::~camera()
@@ -108,13 +111,13 @@ void camera::font2_setup(void)
     {
 
         font.setFamily(m_fontList.at(0));//设置字体样式
-        font.setPixelSize(80);//设置字体大小
+        font.setPixelSize(50);//设置字体大小
         font.setBold(true);//斜体
     }
 
     //标签测试
     ui->word->setFont(font);//主题
-    ui->word->setStyleSheet("background-color: rgb(0, 0, 0);font-size:100px;color:white");
+    ui->word->setStyleSheet("background-color: rgb(0, 0, 0);font-size:50px;color:white");
     ui->word->setText("camera");
 
 //    ui->label->setFont(font);//日期

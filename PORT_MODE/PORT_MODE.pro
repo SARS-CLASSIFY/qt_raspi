@@ -6,6 +6,9 @@
 
 QT       += core gui
 QT       += network serialport
+QT       += multimedia
+
+CONFIG+=resources_big
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,17 +31,20 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     camera.cpp \
-    fix.cpp
+    fix.cpp \
+    music.cpp
 
 HEADERS += \
         mainwindow.h \
     camera.h \
-    fix.h
+    fix.h \
+    music.h
 
 FORMS += \
         mainwindow.ui \
     camera.ui \
-    fix.ui
+    fix.ui \
+    music.ui
 
 DISTFILES += \
     icon/camera.png \
