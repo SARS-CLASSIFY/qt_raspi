@@ -22,8 +22,14 @@
         <file>resourses/4.jpeg</file>
         <file>resourses/5.jpg</file>
         <file>gif2.gif</file>
-        <file>resourses/music/In the End - Linkin Park.mp3</file>
-        <file>resourses/music/Toby Fox - Undertale.mp3</file>
-        <file>resourses/music/Yellow (Acoustic Version From Jo Whiley's Lunchtime Social) - Coldplay.mp3</file>
+        <file>resourses/music/1.mp3</file>
+        <file>resourses/music/2.mp3</file>
+        <file>resourses/music/3.mp3</file>
+        <file>resourses/music/m1.svg</file>
+        <file>resourses/music/m2.svg</file>
+        <file>resourses/music/1.jpeg</file>
+        <file>resourses/music/2.jpeg</file>
+        <file>resourses/music/3.gif</file>
+        <file>resourses/music/3.jpeg</file>
     </qresource>
 </RCC>

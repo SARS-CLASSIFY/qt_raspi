@@ -28,6 +28,9 @@
 #include <QDebug>
 
 
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
+
 /*---------------------------------gui界面测试部分-----------------------
  * 使用按钮进行界面切换调试，可以换成通过串口信息进行页面切换
  * 布局可以根据后续需要进一步修改
@@ -420,6 +423,17 @@ void MainWindow::onSerialReadyRead()
             init_window();
         else if(serialBuf == "get>")//获取天气信息
             checkW();
+
+        //音乐播放部分
+        else if(serialBuf == "play>")//获取天气信息
+            win4->play_status();
+        else if(serialBuf == "stop>")//获取天气信息
+            win4->play_status();
+        else if(serialBuf == "next>")//获取天气信息
+            win4->on_nextSong_clicked();
+        else if(serialBuf == "back>")//获取天气信息
+            win4->on_firstSong_clicked();
+
         serialBuf.clear();
     }
 }
