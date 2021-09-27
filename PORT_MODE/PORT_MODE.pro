@@ -28,6 +28,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    cvcam.cpp \
         main.cpp \
         mainwindow.cpp \
     camera.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
     music.cpp
 
 HEADERS += \
+    cvcam.h \
         mainwindow.h \
     camera.h \
     fix.h \
