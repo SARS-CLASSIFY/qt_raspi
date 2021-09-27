@@ -1,6 +1,6 @@
 #include "camera.h"
 #include "ui_camera.h"
-#include <QDebug.h>
+#include <QDebug>
 #include <QKeyEvent>
 //font
 #include <QCoreApplication>

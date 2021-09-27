@@ -2,7 +2,7 @@
 #include "ui_fix.h"
 #include <camera.h>
 
-#include <QDebug.h>
+#include <QDebug>
 #include <QKeyEvent>
 //font
 #include <QCoreApplication>
