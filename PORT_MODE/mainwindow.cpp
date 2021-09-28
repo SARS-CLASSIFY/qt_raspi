@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     window_init();
     //fullscreen();//全屏显示
     //去掉窗口变框
-    this->setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     this->setGeometry(0,0,1024,600);
 
     //天气
@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     port.setFlowControl(QSerialPort::SoftwareControl);
     port.setStopBits(QSerialPort::OneStop);
     connect(&port, &QSerialPort::readyRead, this, &MainWindow::onSerialReadyRead);
-    qDebug() << port.open(QIODevice::ReadWrite);
+    qDebug() << "open serialport:" << port.open(QIODevice::ReadWrite);
 
 }
 

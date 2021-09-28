@@ -38,7 +38,7 @@ fix::fix(QWidget *parent) :
 
     //private
     window3_init();
-    this->setWindowFlags(Qt::X11BypassWindowManagerHint  | Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     pic_set(ui->label_img,addre2);
 
     //移动到相应父窗口坐标点

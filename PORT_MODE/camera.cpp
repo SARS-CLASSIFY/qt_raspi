@@ -27,7 +27,7 @@ camera::camera(QWidget *parent) :
 {
     ui->setupUi(this);
     window2_init();
-    this->setWindowFlags(Qt::X11BypassWindowManagerHint  | Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
     this->move(122, 162);//窗口移动
 

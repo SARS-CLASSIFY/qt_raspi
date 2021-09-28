@@ -9,6 +9,8 @@
 #include <QFontDatabase>
 #include <QFont>
 
+#include <QDir>
+
 
 
 
@@ -21,7 +23,7 @@ music::music(QWidget *parent) :
     ui->setupUi(this);
 
     play_init();
-    this->setWindowFlags(Qt::X11BypassWindowManagerHint  | Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     this->move(122, 162);//窗口移动
     qmovie_setup();
 
@@ -106,9 +108,11 @@ void music::play_init()
 
 
         playlist = new QMediaPlaylist;
-        playlist->addMedia(QUrl::fromLocalFile("J:/qt_raspi/qt_raspi/PORT_MODE/resourses/music/1.mp3"));
-        playlist->addMedia(QUrl::fromLocalFile("J:/qt_raspi/qt_raspi/PORT_MODE/resourses/music/2.mp3"));
-        playlist->addMedia(QUrl::fromLocalFile("J:/qt_raspi/qt_raspi/PORT_MODE/resourses/music/3.mp3"));
+        QDir dir(QApplication::applicationDirPath());
+        dir.cd("../PORT_MODE/resourses/music");
+        playlist->addMedia(QUrl::fromLocalFile(dir.path() + "/1.mp3"));
+        playlist->addMedia(QUrl::fromLocalFile(dir.path() + "/2.mp3"));
+        playlist->addMedia(QUrl::fromLocalFile(dir.path() + "/3.mp3"));
         playlist->setCurrentIndex(1);
 
         player = new QMediaPlayer;
