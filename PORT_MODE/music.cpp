@@ -188,7 +188,6 @@ void music::play_status()
         qDebug() << "play skipped";
         return;
     }
-    isPlay=!isPlay;
 
     if(isPlay)
     {   player->pause();
@@ -207,6 +206,8 @@ void music::play_status()
 //        ui->play->setIcon(QIcon(":/images/pause.png"));// 播放时候显示暂停图标
 //        ui->play->setToolTip(tr("播放"));
     }
+
+    isPlay=!isPlay;
 }
 
 /*------------------------------------------------

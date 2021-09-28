@@ -87,6 +87,8 @@ private slots:
 
     void onSerialReadyRead();
 
+    void main_page_set(int page_set);
+
 private:
     Ui::MainWindow *ui;
     //personal

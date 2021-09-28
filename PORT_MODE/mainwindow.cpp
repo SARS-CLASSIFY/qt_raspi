@@ -39,6 +39,8 @@
 //主窗口坐标
 
 
+static int page_set = 0;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -101,6 +103,7 @@ void MainWindow::window_init()
                         "#whether{border-image:url(:/icon/cloud.png);}"
                         "#groupBox_3{border:none}"     //用于消除边框
                         "#groupBox_2{border:none}"
+                        "#pagex{background:rgba(255,255,0,1.0);}"
                         "#groupBox{border:none}"
                        );
     //字体设置
@@ -173,6 +176,7 @@ void MainWindow::font_setup(void)
     temperature_set("20℃");
     ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
+    ui->labelX->setStyleSheet("background-color: rgb(0, 0, 0);font-size:16px;color:rgb(192,192,192)");
 }
 
 
@@ -294,7 +298,9 @@ void MainWindow:: init_window()
 {
     win3->hide();
     win2->hide();
-    ui->widget->show();
+    win4->hide();
+    //ui->widget->show();
+    ui->page1->show();
 
 }
 
@@ -408,13 +414,17 @@ void MainWindow::onSerialReadyRead()
     qDebug() << serialBuf;
     if(serialBuf.endsWith('>'))
     {
-        if(serialBuf == "1>")
-            change_to_camera();
-        else if(serialBuf == "2>")
-            change_to_music();
+        if(serialBuf == "1>"){
+            page_set=(page_set+1)%4;
+            main_page_set(page_set);
+        }
+        else if(serialBuf == "2>"){
+            page_set=(page_set+3)%4;
+            main_page_set(page_set);
+        }
             // change_to_fix();
         else if(serialBuf == "3>")
-            change_to_music();
+            main_page_set(3);
         else if(serialBuf == "4>")
             win3->pic_change(1);
         else if(serialBuf == "8>")
@@ -436,6 +446,24 @@ void MainWindow::onSerialReadyRead()
 
         serialBuf.clear();
     }
+}
+
+
+//yemianqiehan
+void MainWindow::main_page_set(int page_set)
+{
+    switch (page_set) {
+        case 0: init_window();
+        break;
+        case 1: change_to_camera();
+        break;
+        case 2: change_to_fix();
+        break;
+    case 3:     change_to_music(); break;
+    default: break;
+
+    }
+
 }
 
 

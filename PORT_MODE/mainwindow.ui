@@ -96,7 +96,7 @@
            <widget class="QLabel" name="whether">
             <property name="geometry">
              <rect>
-              <x>160</x>
+              <x>190</x>
               <y>30</y>
               <width>71</width>
               <height>61</height>
@@ -159,7 +159,7 @@
              <rect>
               <x>20</x>
               <y>60</y>
-              <width>111</width>
+              <width>161</width>
               <height>22</height>
              </rect>
             </property>
@@ -226,6 +226,24 @@
              <bool>true</bool>
             </property>
            </widget>
+          </widget>
+          <widget class="QLabel" name="labelX">
+           <property name="geometry">
+            <rect>
+             <x>90</x>
+             <y>120</y>
+             <width>371</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>文泉驿正黑</family>
+            </font>
+           </property>
+           <property name="text">
+            <string>                       当前环境湿度：30%RH</string>
+           </property>
           </widget>
          </widget>
         </widget>
