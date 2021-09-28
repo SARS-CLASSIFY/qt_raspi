@@ -176,7 +176,7 @@ void MainWindow::font_setup(void)
     temperature_set("20℃");
     ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
-    ui->labelX->setStyleSheet("background-color: rgb(0, 0, 0);font-size:16px;color:rgb(192,192,192)");
+    ui->labelX->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
 }
 
 
@@ -414,20 +414,17 @@ void MainWindow::onSerialReadyRead()
     qDebug() << serialBuf;
     if(serialBuf.endsWith('>'))
     {
-        if(serialBuf == "1>"){
+        if(serialBuf == "8>"){
             page_set=(page_set+1)%4;
             main_page_set(page_set);
         }
-        else if(serialBuf == "2>"){
+        else if(serialBuf == "4>"){
             page_set=(page_set+3)%4;
             main_page_set(page_set);
         }
-            // change_to_fix();
-        else if(serialBuf == "3>")
-            main_page_set(3);
-        else if(serialBuf == "4>")
+        else if(serialBuf == "1>")
             win3->pic_change(1);
-        else if(serialBuf == "8>")
+        else if(serialBuf == "2>")
             win3->pic_change(0);
         else if(serialBuf == "10>")//回到初始界面
             init_window();

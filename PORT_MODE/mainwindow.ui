@@ -86,8 +86,8 @@
             <rect>
              <x>490</x>
              <y>10</y>
-             <width>261</width>
-             <height>151</height>
+             <width>331</width>
+             <height>161</height>
             </rect>
            </property>
            <property name="title">
@@ -172,6 +172,24 @@
              <string>temp</string>
             </property>
            </widget>
+           <widget class="QLabel" name="labelX">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>100</y>
+              <width>171</width>
+              <height>22</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>PibotoLt</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;湿度：32%RH&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="page1" native="true">
            <property name="geometry">
@@ -226,24 +244,6 @@
              <bool>true</bool>
             </property>
            </widget>
-          </widget>
-          <widget class="QLabel" name="labelX">
-           <property name="geometry">
-            <rect>
-             <x>90</x>
-             <y>120</y>
-             <width>371</width>
-             <height>41</height>
-            </rect>
-           </property>
-           <property name="font">
-            <font>
-             <family>文泉驿正黑</family>
-            </font>
-           </property>
-           <property name="text">
-            <string>                       当前环境湿度：30%RH</string>
-           </property>
           </widget>
          </widget>
         </widget>
