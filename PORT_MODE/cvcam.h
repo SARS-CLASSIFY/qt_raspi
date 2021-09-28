@@ -38,8 +38,10 @@ private:
     cv::Mat* rawFrame;
     cv::Mat* roiFrame;
     cv::Mat* roiOfRawFrame;
+    cv::CascadeClassifier* classifier;
     QElapsedTimer* ocrTimer;
     QString labelBuffer;
+    QRect detectFace(cv::Mat img);
 };
 
 #endif // CVCAM_H

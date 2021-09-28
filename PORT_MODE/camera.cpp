@@ -38,10 +38,8 @@ camera::camera(QWidget *parent) :
     connect(this, &camera::openCam, cvCam, &CvCam::openCam);
     connect(this, &camera::closeCam, cvCam, &CvCam::closeCam);
     connect(this, &camera::getFrameAddr, cvCam, &CvCam::getFrameAddr);
-    connect(cvCam, &CvCam::frameRefreshed, this, &camera::onFrameRefreshed);
+    connect(cvCam, &CvCam::frameRefreshed, this, &camera::onFrameRefreshed, Qt::QueuedConnection);
     connect(cvCam, &CvCam::frameAddr, this, &camera::onFrameAddrFetched);
-
-    emit openCam(0);
 
 }
 
@@ -52,7 +50,7 @@ camera::~camera()
 
 QPixmap camera::mat2Pixmap(cv::Mat* mat)
 {
-    return QPixmap::fromImage(QImage((const unsigned char*)mat->data, mat->cols, mat->rows, mat->step, QImage::Format_RGB888).rgbSwapped());
+    return QPixmap::fromImage(QImage((const unsigned char*)mat->data, mat->cols, mat->rows, mat->step, QImage::Format_RGB888).rgbSwapped()).scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio);
 }
 
 void camera::onFrameRefreshed()
@@ -175,5 +173,14 @@ void camera::window2_init()
 
        );
     font2_setup();
+}
+
+void camera::setState(bool state)
+{
+    if(state)
+        emit openCam(0);
+    else {
+        emit closeCam();
+    }
 }
 

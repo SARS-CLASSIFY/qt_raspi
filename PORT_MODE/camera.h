@@ -16,7 +16,9 @@ class camera : public QWidget
 public:
     explicit camera(QWidget *parent = nullptr);
     ~camera();
+    CvCam* getCvCam(){return cvCam;}
 
+    void setState(bool state);
 private slots:
     void keyPressEvent(QKeyEvent *event);
 

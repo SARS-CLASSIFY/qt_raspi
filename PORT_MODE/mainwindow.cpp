@@ -449,6 +449,7 @@ void MainWindow::onSerialReadyRead()
 //yemianqiehan
 void MainWindow::main_page_set(int page_set)
 {
+    win2->setState(page_set == 1);
     switch (page_set) {
         case 0: init_window();
         break;
@@ -456,7 +457,7 @@ void MainWindow::main_page_set(int page_set)
         break;
         case 2: change_to_fix();
         break;
-    case 3:     change_to_music(); break;
+        case 3: change_to_music(); break;
     default: break;
 
     }

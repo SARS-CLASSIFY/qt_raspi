@@ -1,4 +1,7 @@
 #include "cvcam.h"
+#include <QDir>
+#include <QApplication>
+#include <vector>
 
 CvCam::CvCam(QThread* thread, QObject *parent) : QObject(parent)
 {
@@ -11,13 +14,31 @@ CvCam::CvCam(QThread* thread, QObject *parent) : QObject(parent)
     refreshTimer = new QTimer;
     ocrTimer = new QElapsedTimer;
     refreshTimer->moveToThread(thread);
-    refreshTimer->setInterval(50);
+    refreshTimer->setInterval(150);
     connect(refreshTimer, &QTimer::timeout, this, &CvCam::onRefreshTimeout);
+    QDir dir(QApplication::applicationDirPath());
+    dir.cd("../PORT_MODE");
+    classifier = new cv::CascadeClassifier((dir.path()+"/faceClassify.xml").toStdString());
 }
 
 void CvCam::setLabelBuffer(QString bufferText)
 {
     labelBuffer = bufferText;
+}
+
+QRect CvCam::detectFace(cv::Mat img)
+{
+    cv::Mat grey;
+    std::vector<cv::Rect> faces;
+    cv::cvtColor(img, grey, CV_BGR2GRAY);
+    classifier->detectMultiScale(grey, faces);
+    if(faces.size() != 0)
+    {
+        cv::rectangle(*rawFrame, faces[0], cv::Scalar(255,0,0), 3);
+        cv::putText(*rawFrame, "Owner",cv::Point(faces[0].x+faces[0].width, faces[0].y+faces[0].height),cv::FONT_HERSHEY_COMPLEX,1,cv::Scalar(255,0,0));
+        return QRect(faces[0].x, faces[0].y, faces[0].width, faces[0].height);
+    }
+    return QRect();
 }
 
 void CvCam::openCam(int id)
@@ -33,7 +54,10 @@ void CvCam::openCam(int id)
 
 void CvCam::onRefreshTimeout()
 {
-    bool readResult = cam->read(*rawFrame);
+    cv::Mat camFrame;
+    bool readResult = cam->read(camFrame);
+    cv::resize(camFrame, *rawFrame, cv::Size(0,0), 0.5, 0.5);
+    qDebug() << detectFace(*rawFrame);
     if(!readResult)
     {
         cam->release();
