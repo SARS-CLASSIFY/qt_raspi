@@ -411,7 +411,8 @@ void MainWindow::onSerialReadyRead()
         if(serialBuf == "1>")
             change_to_camera();
         else if(serialBuf == "2>")
-            change_to_fix();
+            change_to_music();
+            // change_to_fix();
         else if(serialBuf == "3>")
             change_to_music();
         else if(serialBuf == "4>")
@@ -424,7 +425,7 @@ void MainWindow::onSerialReadyRead()
             checkW();
 
         //音乐播放部分
-        else if(serialBuf == "play>")//获取天气信息
+        else if(serialBuf == "start>")//获取天气信息
             win4->play_status();
         else if(serialBuf == "stop>")//获取天气信息
             win4->play_status();

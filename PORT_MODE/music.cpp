@@ -184,20 +184,24 @@ void music::play_status()
 {
     //如果播放列表为空，按钮不可用，直接返回
     if(playlist->isEmpty())
+    {
+        qDebug() << "play skipped";
         return;
+    }
     isPlay=!isPlay;
 
     if(isPlay)
     {   player->pause();
-
+        qDebug() << "play paused";
         ui->icon->hide();
         ui->icon2->show();
 //        ui->play->setIcon(QIcon(":/images/play.png"));// 暂停时候显示播放图标
 //        ui->play->setToolTip(tr("暂停"));
     }
     else
-    {   player->play();
-
+    {
+        player->play();
+        qDebug() << "played";
         ui->icon->show();
         ui->icon2->hide();
 //        ui->play->setIcon(QIcon(":/images/pause.png"));// 播放时候显示暂停图标
