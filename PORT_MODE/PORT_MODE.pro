@@ -65,3 +65,11 @@ DISTFILES += \
 
 RESOURCES += \
     resources.qrc
+
+linux {
+    message(ON LINUX)
+    LIBS += /usr/local/lib/libopencv*.so
+    INCLUDEPATH += \
+                /usr/local/include/opencv4 \
+                /usr/local/include/opencv4/opencv2 \
+}

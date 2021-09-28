@@ -23,12 +23,11 @@ void CvCam::setLabelBuffer(QString bufferText)
 void CvCam::openCam(int id)
 {
     bool res = cam->open(id);
-    qDebug() << res;
+    qDebug() << "open camera result:" << res;
     if(res)
     {
         refreshTimer->start();
     }
-    getRectResult();
     emit frameAddr(rawFrame, roiFrame, roiOfRawFrame);
 }
 
@@ -44,7 +43,6 @@ void CvCam::onRefreshTimeout()
                 break;
         }
     }
-    getRectResult();
     emit frameRefreshed();
 }
 

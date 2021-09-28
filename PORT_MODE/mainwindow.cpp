@@ -62,20 +62,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
     timer->start(1000);
     port.setBaudRate(115200);
-    port.setPortName("COM1");
+    port.setPortName("/dev/ttyACM0");
     port.setDataBits(QSerialPort::Data8);
     port.setParity(QSerialPort::NoParity);
     port.setFlowControl(QSerialPort::SoftwareControl);
     port.setStopBits(QSerialPort::OneStop);
     connect(&port, &QSerialPort::readyRead, this, &MainWindow::onSerialReadyRead);
     qDebug() << port.open(QIODevice::ReadWrite);
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 //personal
 /*---------------------------------------------------------
@@ -122,8 +122,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         break;
     //del键用于退出 全屏调试使用
     case Qt::Key_Delete:
-        QApplication* app;
-        app->quit();
+        QApplication::quit();
         break;
     case Qt::Key_A:
         change_to_camera();

@@ -30,6 +30,19 @@ camera::camera(QWidget *parent) :
     this->setWindowFlags(Qt::X11BypassWindowManagerHint  | Qt::FramelessWindowHint);
 
     this->move(122, 162);//窗口移动
+
+    cvThread = new QThread();
+    cvCam = new CvCam(cvThread);
+    cvThread->start();
+
+    connect(this, &camera::openCam, cvCam, &CvCam::openCam);
+    connect(this, &camera::closeCam, cvCam, &CvCam::closeCam);
+    connect(this, &camera::getFrameAddr, cvCam, &CvCam::getFrameAddr);
+    connect(cvCam, &CvCam::frameRefreshed, this, &camera::onFrameRefreshed);
+    connect(cvCam, &CvCam::frameAddr, this, &camera::onFrameAddrFetched);
+
+    emit openCam(0);
+
 }
 
 camera::~camera()
@@ -37,6 +50,24 @@ camera::~camera()
     delete ui;
 }
 
+QPixmap camera::mat2Pixmap(cv::Mat* mat)
+{
+    return QPixmap::fromImage(QImage((const unsigned char*)mat->data, mat->cols, mat->rows, mat->step, QImage::Format_RGB888).rgbSwapped());
+}
+
+void camera::onFrameRefreshed()
+{
+    if(rawFrame != nullptr)
+    {
+        ui->label->setPixmap(mat2Pixmap(rawFrame));
+    }
+}
+
+void camera::onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr)
+{
+    qDebug()<<"frame addr:"<<rawAddr;
+    this->rawFrame = rawAddr;
+}
 //personal
 
 

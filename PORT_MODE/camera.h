@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include <QWidget>
+#include "cvcam.h"
 
 //page
 namespace Ui {
@@ -13,7 +14,7 @@ class camera : public QWidget
     Q_OBJECT
 
 public:
-    explicit camera(QWidget *parent = 0);
+    explicit camera(QWidget *parent = nullptr);
     ~camera();
 
 private slots:
@@ -26,6 +27,19 @@ private slots:
 
 private:
     Ui::camera *ui;
+    CvCam* cvCam;
+    QThread* cvThread;
+    cv::Mat* rawFrame;
+
+    QPixmap mat2Pixmap(cv::Mat *mat);
+public slots:
+    void onFrameRefreshed();
+    void onFrameAddrFetched(cv::Mat *rawAddr, cv::Mat *roiAddr, cv::Mat *roiOfRawAddr);
+
+signals:
+    void openCam(int id);
+    void getFrameAddr();
+    void closeCam();
 };
 
 #endif // CAMERA_H
