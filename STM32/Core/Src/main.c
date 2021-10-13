@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "PAJ7620/paj7620.h"
+#include "DHT11/dht11.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,6 +72,7 @@ int main(void)
   uint8_t gesture;
   uint16_t tmp;
   uint8_t str[30];
+  uint8_t tempCnt = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -96,7 +98,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  Delay_Init(64);
+  Delay_Init(300);
   MyUART_SetOStream(USART3);
   MyUART_Init(&uart3, USART3, uartBuf3, 100);
   MyUART_Init(&uart2, USART2, uartBuf2, 100);
@@ -120,6 +122,15 @@ int main(void)
     // forward
     if(MyUART_ReadUntilWithZero(&uart2, str, '>'))
       printf("%s>", str);
+    
+    // temperature
+    tempCnt++;
+    tempCnt %= 20; // 20 * 100 = 2s
+    if(tempCnt == 0)
+    {
+      DHT11_Refresh();
+      printf("t,%.1f,%.1f>", DHT11_GetTemp(), DHT11_GetHumid());
+    }
   }
   /* USER CODE END 3 */
 }
