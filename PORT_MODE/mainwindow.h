@@ -89,6 +89,10 @@ private slots:
 
     void main_page_set(int page_set);
 
+
+    //DHT11
+    void DHT11_Data_Handle(QByteArray myhmi);
+
 private:
     Ui::MainWindow *ui;
     //personal

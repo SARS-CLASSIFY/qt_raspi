@@ -414,6 +414,12 @@ void MainWindow::onSerialReadyRead()
     qDebug() << serialBuf;
     if(serialBuf.endsWith('>'))
     {
+        //湿度数据显示
+        if(serialBuf[0]=='t'){
+            DHT11_Data_Handle(serialBuf);
+        }
+
+
         if(serialBuf == "8>"){
             page_set=(page_set+1)%4;
             main_page_set(page_set);
@@ -462,6 +468,18 @@ void MainWindow::main_page_set(int page_set)
 
     }
 
+}
+
+
+/*--------------------DHT11设置函数-------------------
+ * myhmi:传入串口数据
+ * ----------------------------------------------------*/
+void MainWindow::DHT11_Data_Handle(QByteArray myhmi)
+{
+    QString StrI1=tr(myhmi.mid(myhmi.indexOf("t")+7,4));//自定义了简单协议，通过前面字母读取需要的数据
+    if(sizeof(StrI1)>0){
+        ui->labelX->setText(StrI1+"%RH");
+    }
 }
 
 
