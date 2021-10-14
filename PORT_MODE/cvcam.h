@@ -12,6 +12,8 @@
 #include <QElapsedTimer>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
+#include <opencv2/face/facerec.hpp>
+#include <opencv2/core.hpp>
 
 class CvCam : public QObject
 {
@@ -39,9 +41,13 @@ private:
     cv::Mat* roiFrame;
     cv::Mat* roiOfRawFrame;
     cv::CascadeClassifier* classifier;
+    cv::Ptr<cv::face::LBPHFaceRecognizer> recognizer;
+    QStringList nameList;
     QElapsedTimer* ocrTimer;
     QString labelBuffer;
     QRect detectFace(cv::Mat img);
+    void initRecognizer();
+    QString recognize(cv::Mat img);
 };
 
 #endif // CVCAM_H

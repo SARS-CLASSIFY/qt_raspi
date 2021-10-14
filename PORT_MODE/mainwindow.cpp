@@ -133,6 +133,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_B:
         change_to_fix();
         break;
+    case Qt::Key_Left:
+        page_set=(page_set+3)%4;
+        main_page_set(page_set);
+        break;
+    case Qt::Key_Right:
+        page_set=(page_set+1)%4;
+        main_page_set(page_set);
+        break;
     default:
         break;
     }

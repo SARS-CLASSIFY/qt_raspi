@@ -33,6 +33,7 @@ camera::camera(QWidget *parent) :
 
     cvThread = new QThread();
     cvCam = new CvCam(cvThread);
+    cvCam->moveToThread(cvThread);
     cvThread->start();
 
     connect(this, &camera::openCam, cvCam, &CvCam::openCam);
