@@ -45,6 +45,7 @@ private:
     cv::CascadeClassifier* classifier;
     cv::Ptr<cv::face::LBPHFaceRecognizer> recognizer;
     cv::Ptr<cv::face::MACE> authenticator;
+    QList<int> idList;
     QMap<int, QString> nameMap;
     QElapsedTimer* ocrTimer;
     QString labelBuffer;

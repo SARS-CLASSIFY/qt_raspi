@@ -84,21 +84,34 @@ QRect CvCam::detectFace(cv::Mat img)
 QString CvCam::recognize(cv::Mat img)
 {
     int label = -1;
+    bool ok = true;
     double confidence = 0.0;
     bool authResult;
     recognizer->predict(img, label, confidence);
     authResult = authenticator->same(img);
     qDebug() << "predict:" << label << confidence;
-    qDebug() << "auth:" << authResult;
-    if(authResult)
+    if(confidence > 20)
     {
-        emit verified();
-        return nameMap[0];
+        idList.append(label);
+        if(idList.length() >= 15)
+        {
+            idList.removeAt(0);
+            ok = true;
+            foreach(int i, idList)
+            {
+                if(i != label)
+                    ok = false;
+            }
+            if(ok)
+            {
+                if(label == 0)
+                    emit verified();
+                return nameMap[label];
+            }
+        }
+
     }
-    else if(label > 0 && confidence > 30)
-        return nameMap[label];
-    else
-        return QString();
+    return QString();
 }
 
 void CvCam::openCam(int id)
@@ -136,7 +149,8 @@ void CvCam::onRefreshTimeout()
             }
             else
             {
-                cv::putText(*rawFrame, id.toStdString(), cv::Point(faceArea.x() + faceArea.width(), faceArea.y() + faceArea.height()), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(255, 10, 10));
+                ;
+                // cv::putText(*rawFrame, id.toStdString(), cv::Point(faceArea.x() + faceArea.width(), faceArea.y() + faceArea.height()), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(255, 10, 10));
             }
         }
     }

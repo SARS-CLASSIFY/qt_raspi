@@ -467,6 +467,7 @@ void MainWindow::main_page_set(Page page)
 {
     currentPage = page;
     win2->setState(page == CameraPage);
+    win2->initCamImg();
     switch(page)
     {
     case InitPage:

@@ -23,6 +23,7 @@ public:
     }
 
     void setState(bool state);
+    void initCamImg();
 private slots:
     void keyPressEvent(QKeyEvent *event);
 

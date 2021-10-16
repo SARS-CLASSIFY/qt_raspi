@@ -193,3 +193,10 @@ void camera::onVerified()
     emit unlocked();
 }
 
+void camera::initCamImg()
+{
+    // ui->label->setPixmap(QPixmap(":/icon/camera1.svg"));
+    // window2_init();
+    ui->label->setPixmap(QPixmap());
+    ui->label->setStyleSheet("#label{border-image:url(:/icon/camera1.svg);}");
+}
