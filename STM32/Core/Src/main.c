@@ -73,6 +73,7 @@ int main(void)
   uint16_t tmp;
   uint8_t str[30];
   uint8_t tempCnt = 0;
+  uint8_t pressed = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -130,6 +131,23 @@ int main(void)
     {
       DHT11_Refresh();
       printf("t,%.1f,%.1f>", DHT11_GetTemp(), DHT11_GetHumid());
+    }
+    if(!pressed && HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
+    {
+      Delay_ms(15);
+      if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
+      {
+        printf("key>");
+        pressed = 1;
+      }
+    }
+    else if(pressed && !HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
+    {
+      Delay_ms(15);
+      if(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
+      {
+        pressed = 0;
+      }
     }
   }
   /* USER CODE END 3 */

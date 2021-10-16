@@ -51,6 +51,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    enum Page
+    {
+        InitPage = 0,
+        CameraPage,
+        FixPage,
+        MusicPage
+    };
+
 private slots:
     //personal
     void fullscreen();
@@ -87,12 +95,13 @@ private slots:
 
     void onSerialReadyRead();
 
-    void main_page_set(int page_set);
+    void main_page_set(Page page);
 
 
     //DHT11
     void DHT11_Data_Handle(QByteArray myhmi);
 
+    void unlock();
 private:
     Ui::MainWindow *ui;
     //personal
@@ -100,7 +109,7 @@ private:
     QStringList m_fontList;
     QFont font;
     /*----qmovie-------*/
-    QMovie *showGif,*showGif1;
+    QMovie *showGif, *showGif1;
     QImage *whether_img;
     /*----页面切换------*/
     fix *win3 = new fix;
@@ -115,8 +124,12 @@ private:
     QByteArray serialBuf;
     QSerialPort port;
 
+    Page currentPage = InitPage;
+    bool locked = true;
+
     //界面绝对坐标
 
+    void changePage(int direction);
 };
 
 #endif // MAINWINDOW_H

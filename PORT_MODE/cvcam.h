@@ -1,4 +1,4 @@
-#ifndef CVCAM_H
+﻿#ifndef CVCAM_H
 #define CVCAM_H
 
 #include <QObject>
@@ -31,6 +31,7 @@ signals:
     void frameRefreshed();
     void frameAddr(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr);
     void drugRect(QRect rect);
+    void verified();
 private slots:
     void onRefreshTimeout();
 private:

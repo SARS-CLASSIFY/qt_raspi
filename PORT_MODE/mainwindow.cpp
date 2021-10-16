@@ -38,9 +38,6 @@
  * --------------------------------------------------------------------*/
 //主窗口坐标
 
-
-static int page_set = 0;
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -51,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //fullscreen();//全屏显示
     //去掉窗口变框
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    this->setGeometry(0,0,1024,600);
+    this->setGeometry(0, 0, 1024, 600);
 
     //天气
     manager = new QNetworkAccessManager(this);  //新建QNetworkAccessManager对象
@@ -71,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     port.setStopBits(QSerialPort::OneStop);
     connect(&port, &QSerialPort::readyRead, this, &MainWindow::onSerialReadyRead);
     qDebug() << "open serialport:" << port.open(QIODevice::ReadWrite);
+    connect(win2, &camera::unlocked, this, &MainWindow::unlock);
 
 }
 
@@ -134,12 +132,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         change_to_fix();
         break;
     case Qt::Key_Left:
-        page_set=(page_set+3)%4;
-        main_page_set(page_set);
+        changePage(-1);
         break;
     case Qt::Key_Right:
-        page_set=(page_set+1)%4;
-        main_page_set(page_set);
+        changePage(1);
         break;
     default:
         break;
@@ -423,25 +419,25 @@ void MainWindow::onSerialReadyRead()
     if(serialBuf.endsWith('>'))
     {
         //湿度数据显示
-        if(serialBuf[0]=='t'){
+        if(serialBuf[0] == 't')
+        {
             DHT11_Data_Handle(serialBuf);
         }
 
 
-        if(serialBuf == "8>"){
-            page_set=(page_set+1)%4;
-            main_page_set(page_set);
+        if(serialBuf == "8>")
+        {
+            changePage(-1);
         }
-        else if(serialBuf == "4>"){
-            page_set=(page_set+3)%4;
-            main_page_set(page_set);
+        else if(serialBuf == "4>")
+        {
+            changePage(1);
         }
         else if(serialBuf == "1>")
             win3->pic_change(1);
         else if(serialBuf == "2>")
             win3->pic_change(0);
-        else if(serialBuf == "10>")//回到初始界面
-            init_window();
+
         else if(serialBuf == "get>")//获取天气信息
             checkW();
 
@@ -455,24 +451,35 @@ void MainWindow::onSerialReadyRead()
         else if(serialBuf == "back>")//获取天气信息
             win4->on_firstSong_clicked();
 
+        else if(serialBuf == "key>")
+            locked = true;
+
         serialBuf.clear();
     }
 }
 
 
 //yemianqiehan
-void MainWindow::main_page_set(int page_set)
+void MainWindow::main_page_set(Page page)
 {
-    win2->setState(page_set == 1);
-    switch (page_set) {
-        case 0: init_window();
+    currentPage = page;
+    win2->setState(page == CameraPage);
+    switch(page)
+    {
+    case InitPage:
+        init_window();
         break;
-        case 1: change_to_camera();
+    case CameraPage:
+        change_to_camera();
         break;
-        case 2: change_to_fix();
+    case FixPage:
+        change_to_fix();
         break;
-        case 3: change_to_music(); break;
-    default: break;
+    case MusicPage:
+        change_to_music();
+        break;
+    default:
+        break;
 
     }
 
@@ -484,10 +491,27 @@ void MainWindow::main_page_set(int page_set)
  * ----------------------------------------------------*/
 void MainWindow::DHT11_Data_Handle(QByteArray myhmi)
 {
-    QString StrI1=tr(myhmi.mid(myhmi.indexOf("t")+7,4));//自定义了简单协议，通过前面字母读取需要的数据
-    if(sizeof(StrI1)>0){
-        ui->labelX->setText(StrI1+"%RH");
+    QString StrI1 = tr(myhmi.mid(myhmi.indexOf("t") + 7, 4)); //自定义了简单协议，通过前面字母读取需要的数据
+    if(sizeof(StrI1) > 0)
+    {
+        ui->labelX->setText(StrI1 + "%RH");
     }
 }
 
+void MainWindow::changePage(int direction)
+{
+    Page newPage = (Page)((currentPage + direction + 4) % 4);
+    if(!locked)
+    {
+        main_page_set(newPage);
+    }
+    else if(locked && (newPage == InitPage || newPage == CameraPage))
+    {
+        main_page_set(newPage);
+    }
+}
 
+void MainWindow::unlock()
+{
+    locked = false;
+}

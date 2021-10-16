@@ -1,4 +1,4 @@
-#include "camera.h"
+﻿#include "camera.h"
 #include "ui_camera.h"
 #include <QDebug>
 #include <QKeyEvent>
@@ -41,6 +41,7 @@ camera::camera(QWidget *parent) :
     connect(this, &camera::getFrameAddr, cvCam, &CvCam::getFrameAddr);
     connect(cvCam, &CvCam::frameRefreshed, this, &camera::onFrameRefreshed, Qt::QueuedConnection);
     connect(cvCam, &CvCam::frameAddr, this, &camera::onFrameAddrFetched);
+    connect(cvCam, &CvCam::verified, this, &camera::onVerified);
 
 }
 
@@ -64,7 +65,7 @@ void camera::onFrameRefreshed()
 
 void camera::onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr)
 {
-    qDebug()<<"frame addr:"<<rawAddr;
+    qDebug() << "frame addr:" << rawAddr;
     this->rawFrame = rawAddr;
 }
 //personal
@@ -75,10 +76,11 @@ void camera::onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roi
  * -----------------------------------------------*/
 void camera::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key()) {
+    switch(event->key())
+    {
     //判断ESC按键事件
     case Qt::Key_Escape:
-        qDebug()<<"esc"<<endl;
+        qDebug() << "esc" << endl;
         break;
     //del键用于退出 全屏调试使用
     case Qt::Key_Delete:
@@ -133,11 +135,11 @@ void camera::font2_setup(void)
 
     int lcdFontId = QFontDatabase::addApplicationFont(":/ALiHanYiZhiNengHeiTi-2.ttf"); // 从source资源文件
     // int lcdFontId = QFontDatabase::addApplicationFont(dir + "/fonts/DS-DIGI.ttf"); //从外部资源文件
-    if (lcdFontId != -1) // -1为加载失败
+    if(lcdFontId != -1)  // -1为加载失败
     {
         m_fontList << QFontDatabase::applicationFontFamilies(lcdFontId);
     }
-    if (!m_fontList.isEmpty())
+    if(!m_fontList.isEmpty())
     {
 
         font.setFamily(m_fontList.at(0));//设置字体样式
@@ -172,7 +174,7 @@ void camera::window2_init()
                         "#pushButton_3{border-image:url(:/icon/btn3.svg);}"
                         "#groupBox{border:none}"
 
-       );
+                       );
     font2_setup();
 }
 
@@ -180,8 +182,14 @@ void camera::setState(bool state)
 {
     if(state)
         emit openCam(0);
-    else {
+    else
+    {
         emit closeCam();
     }
+}
+
+void camera::onVerified()
+{
+    emit unlocked();
 }
 

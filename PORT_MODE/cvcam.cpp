@@ -72,6 +72,8 @@ QString CvCam::recognize(cv::Mat img)
     double confidence = 0.0;
     recognizer->predict(img, label, confidence);
     qDebug() << "predict:" << label << confidence;
+    if(label == 0)
+        emit verified();
     if(label != -1 && confidence > 0.5)
         return nameList[label];
     else
