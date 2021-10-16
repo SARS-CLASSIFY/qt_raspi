@@ -20,6 +20,7 @@ CvCam::CvCam(QThread* thread, QObject *parent) : QObject(parent)
     dir.cd("../PORT_MODE");
     classifier = new cv::CascadeClassifier((dir.path() + "/faceClassify.xml").toStdString());
     recognizer = cv::face::LBPHFaceRecognizer::create();
+    authenticator = cv::face::MACE::create();
     initRecognizer();
 }
 
@@ -31,6 +32,7 @@ void CvCam::setLabelBuffer(QString bufferText)
 void CvCam::initRecognizer()
 {
     std::vector<cv::Mat> imgList;
+    std::vector<cv::Mat> authList;
     std::vector<int> idList;
     QDir dir(QApplication::applicationDirPath());
     dir.cd("data");
@@ -41,21 +43,34 @@ void CvCam::initRecognizer()
     info.close();
     for(auto line = infoLines.begin(); line != infoLines.end(); line++)
     {
+        if(line->length() == 0)
+            continue;
         QList<QByteArray> args = line->split(',');
-        if(args.length() == 3)
+        if(args.length() == 2)
         {
-            imgList.push_back(cv::imread(dir.absoluteFilePath(args[0]).toStdString(), 0));
-            idList.push_back(args[1].toInt());
-            nameList.append(args[2]);
+            QDir subDir = dir;
+            int id = args[0].toInt();
+            subDir.cd(args[0]);
+            nameMap[id] = args[1];
+            foreach(auto file, subDir.entryList(QDir::Files | QDir::NoDotAndDotDot))
+            {
+                qDebug() << id << args[1] << subDir.absoluteFilePath(file);
+                cv::Mat mat = cv::imread(subDir.absoluteFilePath(file).toStdString(), 0);
+                imgList.push_back(mat);
+                idList.push_back(id);
+                if(id == 0)
+                    authList.push_back(mat);
+            }
         }
     }
     recognizer->train(imgList, idList);
+    authenticator->train(authList);
 }
 
 QRect CvCam::detectFace(cv::Mat img)
 {
     std::vector<cv::Rect> faces;
-    classifier->detectMultiScale(img, faces);
+    classifier->detectMultiScale(img, faces, 1.1, 3, 0, cv::Size(img.cols * 0.3, img.rows * 0.3));
     if(faces.size() != 0)
     {
         return QRect(faces[0].x, faces[0].y, faces[0].width, faces[0].height);
@@ -70,12 +85,18 @@ QString CvCam::recognize(cv::Mat img)
 {
     int label = -1;
     double confidence = 0.0;
+    bool authResult;
     recognizer->predict(img, label, confidence);
+    authResult = authenticator->same(img);
     qDebug() << "predict:" << label << confidence;
-    if(label == 0)
+    qDebug() << "auth:" << authResult;
+    if(authResult)
+    {
         emit verified();
-    if(label != -1 && confidence > 0.5)
-        return nameList[label];
+        return nameMap[0];
+    }
+    else if(label > 0 && confidence > 30)
+        return nameMap[label];
     else
         return QString();
 }
@@ -103,11 +124,20 @@ void CvCam::onRefreshTimeout()
     faceArea = detectFace(grey);
     if(faceArea.width() > 0 && faceArea.height() > 0)
     {
-        cv::rectangle(*rawFrame, cv::Rect(faceArea.x(), faceArea.y(), faceArea.width(), faceArea.height()), cv::Scalar(255, 0, 0), 3);
+        cv::rectangle(*rawFrame, cv::Rect(faceArea.x(), faceArea.y(), faceArea.width(), faceArea.height()), cv::Scalar(255, 10, 10), 3);
         id = recognize(grey);
+        qDebug() << "recognize:" << id;
         if(!id.isEmpty())
         {
-            cv::putText(*rawFrame, id.toStdString(), cv::Point(faceArea.x() + faceArea.width(), faceArea.y() + faceArea.height()), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(255, 0, 0));
+            if(id == nameMap[0])
+            {
+                cv::rectangle(*rawFrame, cv::Rect(faceArea.x(), faceArea.y(), faceArea.width(), faceArea.height()), cv::Scalar(10, 255, 10), 3);
+                cv::putText(*rawFrame, id.toStdString(), cv::Point(faceArea.x() + faceArea.width(), faceArea.y() + faceArea.height()), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(10, 255, 10));
+            }
+            else
+            {
+                cv::putText(*rawFrame, id.toStdString(), cv::Point(faceArea.x() + faceArea.width(), faceArea.y() + faceArea.height()), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(255, 10, 10));
+            }
         }
     }
 

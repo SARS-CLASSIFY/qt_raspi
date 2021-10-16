@@ -452,7 +452,10 @@ void MainWindow::onSerialReadyRead()
             win4->on_firstSong_clicked();
 
         else if(serialBuf == "key>")
+        {
             locked = true;
+            main_page_set(InitPage);
+        }
 
         serialBuf.clear();
     }
@@ -501,6 +504,7 @@ void MainWindow::DHT11_Data_Handle(QByteArray myhmi)
 void MainWindow::changePage(int direction)
 {
     Page newPage = (Page)((currentPage + direction + 4) % 4);
+    qDebug() << "newPage:" << newPage << locked;
     if(!locked)
     {
         main_page_set(newPage);

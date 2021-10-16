@@ -13,6 +13,7 @@
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/face/facerec.hpp>
+#include <opencv2/face/mace.hpp>
 #include <opencv2/core.hpp>
 
 class CvCam : public QObject
@@ -43,7 +44,8 @@ private:
     cv::Mat* roiOfRawFrame;
     cv::CascadeClassifier* classifier;
     cv::Ptr<cv::face::LBPHFaceRecognizer> recognizer;
-    QStringList nameList;
+    cv::Ptr<cv::face::MACE> authenticator;
+    QMap<int, QString> nameMap;
     QElapsedTimer* ocrTimer;
     QString labelBuffer;
     QRect detectFace(cv::Mat img);

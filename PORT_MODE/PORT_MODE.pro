@@ -73,3 +73,5 @@ linux {
                 /usr/local/include/opencv4 \
                 /usr/local/include/opencv4/opencv2 \
 }
+
+QMAKE_CXXFLAGS += -Wl,--stack,100000000
