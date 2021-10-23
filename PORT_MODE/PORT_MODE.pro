@@ -73,3 +73,11 @@ linux {
                 /usr/local/include/opencv4 \
                 /usr/local/include/opencv4/opencv2 \
 }
+
+
+INCLUDEPATH += D:\OPENCV342\opencv\opencv-build\install\include\
+               D:\OPENCV342\opencv\opencv-build\install\include\opencv2\
+               D:\OPENCV342\opencv\opencv-build\install\include\opencv
+
+LIBS += -L D:\OPENCV342\opencv\opencv-build\install\x86\mingw\lib\libopencv_*.a
+
