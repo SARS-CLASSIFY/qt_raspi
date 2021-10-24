@@ -1,4 +1,4 @@
-#ifndef CVCAM_H
+﻿#ifndef CVCAM_H
 #define CVCAM_H
 
 #include <QObject>
@@ -12,6 +12,9 @@
 #include <QElapsedTimer>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
+#include <opencv2/face/facerec.hpp>
+#include <opencv2/face/mace.hpp>
+#include <opencv2/core.hpp>
 
 class CvCam : public QObject
 {
@@ -29,6 +32,7 @@ signals:
     void frameRefreshed();
     void frameAddr(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr);
     void drugRect(QRect rect);
+    void verified();
 private slots:
     void onRefreshTimeout();
 private:
@@ -39,9 +43,14 @@ private:
     cv::Mat* roiFrame;
     cv::Mat* roiOfRawFrame;
     cv::CascadeClassifier* classifier;
+    cv::Ptr<cv::face::LBPHFaceRecognizer> recognizer;
+    cv::Ptr<cv::face::MACE> authenticator;
+    QMap<int, QString> nameMap;
     QElapsedTimer* ocrTimer;
     QString labelBuffer;
     QRect detectFace(cv::Mat img);
+    void initRecognizer();
+    QString recognize(cv::Mat img);
 };
 
 #endif // CVCAM_H

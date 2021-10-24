@@ -1,11 +1,12 @@
-#ifndef CAMERA_H
+﻿#ifndef CAMERA_H
 #define CAMERA_H
 
 #include <QWidget>
 #include "cvcam.h"
 
 //page
-namespace Ui {
+namespace Ui
+{
 class camera;
 }
 
@@ -16,7 +17,10 @@ class camera : public QWidget
 public:
     explicit camera(QWidget *parent = nullptr);
     ~camera();
-    CvCam* getCvCam(){return cvCam;}
+    CvCam* getCvCam()
+    {
+        return cvCam;
+    }
 
     void setState(bool state);
 private slots:
@@ -27,6 +31,7 @@ private slots:
     void window2_init();
     void font2_setup(void);
 
+    void onVerified();
 private:
     Ui::camera *ui;
     CvCam* cvCam;
@@ -42,6 +47,7 @@ signals:
     void openCam(int id);
     void getFrameAddr();
     void closeCam();
+    void unlocked();
 };
 
 #endif // CAMERA_H

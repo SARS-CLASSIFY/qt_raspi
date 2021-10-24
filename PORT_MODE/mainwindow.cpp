@@ -38,9 +38,6 @@
  * --------------------------------------------------------------------*/
 //主窗口坐标
 
-
-static int page_set = 0;
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -51,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //fullscreen();//全屏显示
     //去掉窗口变框
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    this->setGeometry(0,0,1024,600);
+    this->setGeometry(0, 0, 1024, 600);
 
     //天气
     manager = new QNetworkAccessManager(this);  //新建QNetworkAccessManager对象
@@ -65,12 +62,14 @@ MainWindow::MainWindow(QWidget *parent) :
     timer->start(1000);
     port.setBaudRate(115200);
     port.setPortName("/dev/ttyACM0");
+//    port.setPortName("COM1");
     port.setDataBits(QSerialPort::Data8);
     port.setParity(QSerialPort::NoParity);
     port.setFlowControl(QSerialPort::SoftwareControl);
     port.setStopBits(QSerialPort::OneStop);
     connect(&port, &QSerialPort::readyRead, this, &MainWindow::onSerialReadyRead);
     qDebug() << "open serialport:" << port.open(QIODevice::ReadWrite);
+    connect(win2, &camera::unlocked, this, &MainWindow::unlock);
 
 }
 
@@ -108,8 +107,13 @@ void MainWindow::window_init()
                        );
     //字体设置
     font_setup();
+    //hide
+    ui->labelGIF3->hide();
+    ui->my_txt1->hide();
+    ui->my_txt2->hide();
     //动图设置
     qmovie_setup();
+
 }
 
 /*-------------------------------------------------------
@@ -132,6 +136,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_B:
         change_to_fix();
+        break;
+    case Qt::Key_Left:
+        changePage(-1);
+        break;
+    case Qt::Key_Right:
+        changePage(1);
         break;
     default:
         break;
@@ -177,6 +187,10 @@ void MainWindow::font_setup(void)
     ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->labelX->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
+
+    //穿搭标签字体
+    ui->my_txt1->setStyleSheet("background-color: rgb(0, 0, 0);font-size:40px;color:rgb(192,192,192)");
+    ui->my_txt2->setStyleSheet("background-color: rgb(0, 0, 0);font-size:18px;color:rgb(192,192,192)");
 }
 
 
@@ -300,6 +314,7 @@ void MainWindow:: init_window()
     win2->hide();
     win4->hide();
     //ui->widget->show();
+    cloth_recommend(wendu);
     ui->page1->show();
 
 }
@@ -415,37 +430,43 @@ void MainWindow::onSerialReadyRead()
     if(serialBuf.endsWith('>'))
     {
         //湿度数据显示
-        if(serialBuf[0]=='t'){
+        if(serialBuf[0] == 't')
+        {
             DHT11_Data_Handle(serialBuf);
         }
 
 
-        if(serialBuf == "8>"){
-            page_set=(page_set+1)%4;
-            main_page_set(page_set);
+        if(serialBuf == "8>")
+        {
+            changePage(-1);
         }
-        else if(serialBuf == "4>"){
-            page_set=(page_set+3)%4;
-            main_page_set(page_set);
+        else if(serialBuf == "4>")
+        {
+            changePage(1);
         }
         else if(serialBuf == "1>")
             win3->pic_change(1);
         else if(serialBuf == "2>")
             win3->pic_change(0);
-        else if(serialBuf == "10>")//回到初始界面
-            init_window();
+
         else if(serialBuf == "get>")//获取天气信息
             checkW();
 
         //音乐播放部分
-        else if(serialBuf == "start>")//获取天气信息
+        else if(serialBuf == "start>")
             win4->play_status();
-        else if(serialBuf == "stop>")//获取天气信息
+        else if(serialBuf == "stop>")
             win4->play_status();
-        else if(serialBuf == "next>")//获取天气信息
+        else if(serialBuf == "next>")
             win4->on_nextSong_clicked();
-        else if(serialBuf == "back>")//获取天气信息
+        else if(serialBuf == "back>")
             win4->on_firstSong_clicked();
+
+        else if(serialBuf == "key>")
+        {
+            locked = true;
+            main_page_set(InitPage);
+        }
 
         serialBuf.clear();
     }
@@ -453,18 +474,26 @@ void MainWindow::onSerialReadyRead()
 
 
 //yemianqiehan
-void MainWindow::main_page_set(int page_set)
+void MainWindow::main_page_set(Page page)
 {
-    win2->setState(page_set == 1);
-    switch (page_set) {
-        case 0: init_window();
+    currentPage = page;
+    win2->setState(page == CameraPage);
+    switch(page)
+    {
+    case InitPage:
+        init_window();
         break;
-        case 1: change_to_camera();
+    case CameraPage:
+        change_to_camera();
         break;
-        case 2: change_to_fix();
+    case FixPage:
+        change_to_fix();
         break;
-        case 3: change_to_music(); break;
-    default: break;
+    case MusicPage:
+        change_to_music();
+        break;
+    default:
+        break;
 
     }
 
@@ -476,10 +505,85 @@ void MainWindow::main_page_set(int page_set)
  * ----------------------------------------------------*/
 void MainWindow::DHT11_Data_Handle(QByteArray myhmi)
 {
-    QString StrI1=tr(myhmi.mid(myhmi.indexOf("t")+7,4));//自定义了简单协议，通过前面字母读取需要的数据
-    if(sizeof(StrI1)>0){
-        ui->labelX->setText(StrI1+"%RH");
+    QString StrI1 = tr(myhmi.mid(myhmi.lastIndexOf(",") + 1, 4)); //自定义了简单协议，通过前面字母读取需要的数据
+    if(sizeof(StrI1) > 0)
+    {
+        ui->labelX->setText(StrI1 + "%RH");
     }
+}
+
+void MainWindow::changePage(int direction)
+{
+    Page newPage = (Page)((currentPage + direction + 4) % 4);
+    qDebug() << "newPage:" << newPage << locked;
+    if(!locked)
+    {
+        main_page_set(newPage);
+    }
+    else if(locked && (newPage == InitPage || newPage == CameraPage))
+    {
+        main_page_set(newPage);
+    }
+}
+
+void MainWindow::unlock()
+{
+    locked = false;
+}
+
+
+
+//穿搭推荐部分
+/*------------------------------------------------
+ * 图片设置功能
+ * ---------------------------------------------*/
+
+void MainWindow::cloth_change(QLabel *label,QString fileaddress)
+{
+    QImage *img=new QImage; //新建一个image对象
+
+
+
+    img->load(fileaddress); //将图像资源载入对象img，注意路径，可点进图片右键复制路径
+
+    img->scaled(label->size(), Qt::KeepAspectRatio);
+    label->setScaledContents(true);
+    label->setPixmap(QPixmap::fromImage(*img)); //将图片放入label，使用setPixmap,注意指针*img
+}
+
+/*----------------------------------------------
+ * 穿搭切换逻辑
+ * --------------------------------------------*/
+void MainWindow::cloth_recommend(QString wendu)
+{
+    QString s;
+    s = wendu.mid(0,wendu.indexOf("~")-1);
+    int get_temp = s.toInt();
+    qDebug()<<get_temp;
+
+    if(get_temp<=20&&get_temp>=10){
+        cloth_change(ui->labelGIF3,addrea);
+        ui->my_txt2->setText("推荐穿搭:\n夹克\n天气转冷\n小心着凉");
+    }
+    else if(get_temp<=10&&get_temp>=0){
+        cloth_change(ui->labelGIF3,addrec);
+        ui->my_txt2->setText("推荐穿搭:\n夹克\n天气转冷\n小心着凉");
+    }
+    else if(get_temp<0){
+        cloth_change(ui->labelGIF3,addree);
+        ui->my_txt2->setText("推荐穿搭:\n棉衣棉裤\n天气转冷\n小心着凉");
+    }
+    else if(get_temp>20){
+        cloth_change(ui->labelGIF3,addred);
+        ui->my_txt2->setText("推荐穿搭:\n短袖T恤\n天气较热\n清爽着装");
+    }
+
+
+
+    ui->labelGif->hide();
+    ui->labelGIF3->show();
+    ui->my_txt1->show();
+    ui->my_txt2->show();
 }
 
 
