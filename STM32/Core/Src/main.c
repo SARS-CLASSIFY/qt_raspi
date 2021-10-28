@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "eth.h"
+#include "tim.h"
 #include "usart.h"
 #include "usb_otg.h"
 #include "gpio.h"
@@ -28,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "PAJ7620/paj7620.h"
 #include "DHT11/dht11.h"
+#include "WS2812/ws2812.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +51,8 @@
 /* USER CODE BEGIN PV */
 MyUARTHandle uart2, uart3;
 uint8_t uartBuf2[100], uartBuf3[100];
+WS2812_Dev ws2812Dev1, ws2812Dev2;
+const uint8_t LED_4write[12] = {0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -98,12 +102,19 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   MX_USART2_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   Delay_Init(300);
   MyUART_SetOStream(USART3);
   MyUART_Init(&uart3, USART3, uartBuf3, 100);
   MyUART_Init(&uart2, USART2, uartBuf2, 100);
+  WS2812_Init(&ws2812Dev1, DMA2_Stream5, DMA_REQUEST_TIM4_UP, DMA2_Stream5_IRQn, &htim4);
+  WS2812_Init(&ws2812Dev2, DMA2_Stream6, DMA_REQUEST_TIM2_UP, DMA2_Stream6_IRQn, &htim2);
   printf("Init: %d>", PAJ7620_Init(GPIOF, 6, GPIOF, 7));
+  Delay_ms(2000);
+  WS2812_Write(&ws2812Dev1, TIM_CHANNEL_2, LED_4write, 12);
+  WS2812_Write(&ws2812Dev2, TIM_CHANNEL_1, LED_4write, 12);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -209,7 +220,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void DMA2_Stream5_IRQHandler(void)
+{
+  WS2812_UpdateBuf();
+}
+void DMA2_Stream6_IRQHandler(void)
+{
+  WS2812_UpdateBuf();
+}
 /* USER CODE END 4 */
 
 /**

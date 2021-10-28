@@ -193,3 +193,7 @@ void camera::onVerified()
     emit unlocked();
 }
 
+void camera::initCamImg()
+{
+    ui->label->setPixmap(QPixmap(":/icon/camera1.svg"));
+}
