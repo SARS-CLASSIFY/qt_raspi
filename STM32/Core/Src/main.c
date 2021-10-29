@@ -160,6 +160,11 @@ int main(void)
   printf("Init: %d>", PAJ7620_Init(GPIOF, 6, GPIOF, 7));
   Delay_ms(50);
   CameraLED_Set(0);
+  Delay_ms(1);
+  CameraLED_Set(0);
+  StripeLED_Set(0, 0, 0);
+  Delay_ms(50);
+  CameraLED_Set(0);
   StripeLED_Set(0, 0, 0);
   /* USER CODE END 2 */
 
@@ -213,12 +218,12 @@ int main(void)
         if(str[1] == '1')
         {
           i = 1;
-          for(; i <= 0x40; i++)
+          for(; i <= 0x30; i++)
           {
             CameraLED_Set(i);
             Delay_ms(10);
           }
-          for(; i <= 0x90; i += 2)
+          for(; i <= 0x50; i += 2)
           {
             CameraLED_Set(i);
             Delay_ms(10);
