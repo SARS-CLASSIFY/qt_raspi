@@ -477,7 +477,16 @@ void MainWindow::onSerialReadyRead()
 void MainWindow::main_page_set(Page page)
 {
     currentPage = page;
-    win2->setState(page == CameraPage);
+    if(page == CameraPage)
+    {
+        win2->setState(true);
+        port.write("c1>", 3);
+    }
+    else
+    {
+        win2->setState(false);
+        port.write("c0>", 3);
+    }
     switch(page)
     {
     case InitPage:
@@ -529,6 +538,7 @@ void MainWindow::changePage(int direction)
 void MainWindow::unlock()
 {
     locked = false;
+    port.write("f\x05\x40\x05>", 5);
 }
 
 
@@ -538,9 +548,9 @@ void MainWindow::unlock()
  * 图片设置功能
  * ---------------------------------------------*/
 
-void MainWindow::cloth_change(QLabel *label,QString fileaddress)
+void MainWindow::cloth_change(QLabel *label, QString fileaddress)
 {
-    QImage *img=new QImage; //新建一个image对象
+    QImage *img = new QImage; //新建一个image对象
 
 
 
@@ -557,24 +567,28 @@ void MainWindow::cloth_change(QLabel *label,QString fileaddress)
 void MainWindow::cloth_recommend(QString wendu)
 {
     QString s;
-    s = wendu.mid(0,wendu.indexOf("~")-1);
+    s = wendu.mid(0, wendu.indexOf("~") - 1);
     int get_temp = s.toInt();
-    qDebug()<<get_temp;
+    qDebug() << get_temp;
 
-    if(get_temp<=20&&get_temp>=10){
-        cloth_change(ui->labelGIF3,addrea);
+    if(get_temp <= 20 && get_temp >= 10)
+    {
+        cloth_change(ui->labelGIF3, addrea);
         ui->my_txt2->setText("推荐穿搭:\n夹克\n天气转冷\n小心着凉");
     }
-    else if(get_temp<=10&&get_temp>=0){
-        cloth_change(ui->labelGIF3,addrec);
+    else if(get_temp <= 10 && get_temp >= 0)
+    {
+        cloth_change(ui->labelGIF3, addrec);
         ui->my_txt2->setText("推荐穿搭:\n夹克\n天气转冷\n小心着凉");
     }
-    else if(get_temp<0){
-        cloth_change(ui->labelGIF3,addree);
+    else if(get_temp < 0)
+    {
+        cloth_change(ui->labelGIF3, addree);
         ui->my_txt2->setText("推荐穿搭:\n棉衣棉裤\n天气转冷\n小心着凉");
     }
-    else if(get_temp>20){
-        cloth_change(ui->labelGIF3,addred);
+    else if(get_temp > 20)
+    {
+        cloth_change(ui->labelGIF3, addred);
         ui->my_txt2->setText("推荐穿搭:\n短袖T恤\n天气较热\n清爽着装");
     }
 
