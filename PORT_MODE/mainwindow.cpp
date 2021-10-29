@@ -62,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     timer->start(1000);
     port.setBaudRate(115200);
     port.setPortName("/dev/ttyACM0");
+//    port.setPortName("COM1");
     port.setDataBits(QSerialPort::Data8);
     port.setParity(QSerialPort::NoParity);
     port.setFlowControl(QSerialPort::SoftwareControl);
@@ -106,8 +107,13 @@ void MainWindow::window_init()
                        );
     //字体设置
     font_setup();
+    //hide
+    ui->labelGIF3->hide();
+    ui->my_txt1->hide();
+    ui->my_txt2->hide();
     //动图设置
     qmovie_setup();
+
 }
 
 /*-------------------------------------------------------
@@ -181,6 +187,10 @@ void MainWindow::font_setup(void)
     ui->type->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->fengli->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
     ui->labelX->setStyleSheet("background-color: rgb(0, 0, 0);font-size:20px;color:rgb(192,192,192)");
+
+    //穿搭标签字体
+    ui->my_txt1->setStyleSheet("background-color: rgb(0, 0, 0);font-size:40px;color:rgb(192,192,192)");
+    ui->my_txt2->setStyleSheet("background-color: rgb(0, 0, 0);font-size:18px;color:rgb(192,192,192)");
 }
 
 
@@ -304,6 +314,7 @@ void MainWindow:: init_window()
     win2->hide();
     win4->hide();
     //ui->widget->show();
+    cloth_recommend(wendu);
     ui->page1->show();
 
 }
@@ -442,13 +453,13 @@ void MainWindow::onSerialReadyRead()
             checkW();
 
         //音乐播放部分
-        else if(serialBuf == "start>")//获取天气信息
+        else if(serialBuf == "start>")
             win4->play_status();
-        else if(serialBuf == "stop>")//获取天气信息
+        else if(serialBuf == "stop>")
             win4->play_status();
-        else if(serialBuf == "next>")//获取天气信息
+        else if(serialBuf == "next>")
             win4->on_nextSong_clicked();
-        else if(serialBuf == "back>")//获取天气信息
+        else if(serialBuf == "back>")
             win4->on_firstSong_clicked();
 
         else if(serialBuf == "key>")
@@ -466,8 +477,16 @@ void MainWindow::onSerialReadyRead()
 void MainWindow::main_page_set(Page page)
 {
     currentPage = page;
-    win2->setState(page == CameraPage);
-    win2->initCamImg();
+    if(page == CameraPage)
+    {
+        win2->setState(true);
+        port.write("c1>", 3);
+    }
+    else
+    {
+        win2->setState(false);
+        port.write("c0>", 3);
+    }
     switch(page)
     {
     case InitPage:
@@ -495,7 +514,7 @@ void MainWindow::main_page_set(Page page)
  * ----------------------------------------------------*/
 void MainWindow::DHT11_Data_Handle(QByteArray myhmi)
 {
-    QString StrI1 = tr(myhmi.mid(myhmi.indexOf("t") + 7, 4)); //自定义了简单协议，通过前面字母读取需要的数据
+    QString StrI1 = tr(myhmi.mid(myhmi.lastIndexOf(",") + 1, 4)); //自定义了简单协议，通过前面字母读取需要的数据
     if(sizeof(StrI1) > 0)
     {
         ui->labelX->setText(StrI1 + "%RH");
@@ -519,4 +538,66 @@ void MainWindow::changePage(int direction)
 void MainWindow::unlock()
 {
     locked = false;
+    port.write("f\x05\x40\x05>", 5);
 }
+
+
+
+//穿搭推荐部分
+/*------------------------------------------------
+ * 图片设置功能
+ * ---------------------------------------------*/
+
+void MainWindow::cloth_change(QLabel *label, QString fileaddress)
+{
+    QImage *img = new QImage; //新建一个image对象
+
+
+
+    img->load(fileaddress); //将图像资源载入对象img，注意路径，可点进图片右键复制路径
+
+    img->scaled(label->size(), Qt::KeepAspectRatio);
+    label->setScaledContents(true);
+    label->setPixmap(QPixmap::fromImage(*img)); //将图片放入label，使用setPixmap,注意指针*img
+}
+
+/*----------------------------------------------
+ * 穿搭切换逻辑
+ * --------------------------------------------*/
+void MainWindow::cloth_recommend(QString wendu)
+{
+    QString s;
+    s = wendu.mid(0, wendu.indexOf("~") - 1);
+    int get_temp = s.toInt();
+    qDebug() << get_temp;
+
+    if(get_temp <= 20 && get_temp >= 10)
+    {
+        cloth_change(ui->labelGIF3, addrea);
+        ui->my_txt2->setText("推荐穿搭:\n夹克\n天气转冷\n小心着凉");
+    }
+    else if(get_temp <= 10 && get_temp >= 0)
+    {
+        cloth_change(ui->labelGIF3, addrec);
+        ui->my_txt2->setText("推荐穿搭:\n夹克\n天气转冷\n小心着凉");
+    }
+    else if(get_temp < 0)
+    {
+        cloth_change(ui->labelGIF3, addree);
+        ui->my_txt2->setText("推荐穿搭:\n棉衣棉裤\n天气转冷\n小心着凉");
+    }
+    else if(get_temp > 20)
+    {
+        cloth_change(ui->labelGIF3, addred);
+        ui->my_txt2->setText("推荐穿搭:\n短袖T恤\n天气较热\n清爽着装");
+    }
+
+
+
+    ui->labelGif->hide();
+    ui->labelGIF3->show();
+    ui->my_txt1->show();
+    ui->my_txt2->show();
+}
+
+

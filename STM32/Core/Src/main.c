@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "eth.h"
+#include "tim.h"
 #include "usart.h"
 #include "usb_otg.h"
 #include "gpio.h"
@@ -28,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "PAJ7620/paj7620.h"
 #include "DHT11/dht11.h"
+#include "WS2812/ws2812.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +51,8 @@
 /* USER CODE BEGIN PV */
 MyUARTHandle uart2, uart3;
 uint8_t uartBuf2[100], uartBuf3[100];
+WS2812_Dev ws2812Dev1, ws2812Dev2;
+uint8_t ledBuf[130];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,7 +63,52 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void CameraLED_Set(uint8_t val)
+{
+  uint8_t i;
+  for(i = 0; i < 12; i++)
+    ledBuf[i] = val;
+  for(i = 2; i < 12; i += 3) // warmer
+    ledBuf[i] = val * 0.7;
+  WS2812_Write(&ws2812Dev1, TIM_CHANNEL_2, ledBuf, 12);
+}
 
+void StripeLED_Set(uint8_t r, uint8_t g, uint8_t b)
+{
+  // skip first led
+  uint8_t i;
+  ledBuf[0] = 0;
+  ledBuf[1] = 0;
+  ledBuf[2] = 0;
+  for(i = 3; i < 129; i += 3)
+    ledBuf[i] = g;
+  for(i = 4; i < 129; i += 3)
+    ledBuf[i] = r;
+  for(i = 5; i < 129; i += 3)
+    ledBuf[i] = b;
+  WS2812_Write(&ws2812Dev2, TIM_CHANNEL_1, ledBuf, 129);
+}
+
+void StripeLED_Flow(uint8_t r, uint8_t g, uint8_t b)
+{
+  // skip first led
+  uint8_t i, j;
+  for(i = 0; i < 129; i++)
+    ledBuf[i] = 0;
+  for(i = 0; i < 21; i++)
+  {
+    ledBuf[(22 - i) * 3 + 0] = ledBuf[(22 - i) * 3 + 1] = ledBuf[(22 - i) * 3 + 2] = 0;
+    ledBuf[(21 + i) * 3 + 0] = ledBuf[(21 + i) * 3 + 1] = ledBuf[(21 + i) * 3 + 2] = 0;
+    ledBuf[(21 - i) * 3 + 0] = ledBuf[(22 + i) * 3 + 0] = g;
+    ledBuf[(21 - i) * 3 + 1] = ledBuf[(22 + i) * 3 + 1] = b;
+    ledBuf[(21 - i) * 3 + 2] = ledBuf[(22 + i) * 3 + 2] = r;
+    WS2812_Write(&ws2812Dev2, TIM_CHANNEL_1, ledBuf, 129);
+    Delay_ms(20);
+  }
+  ledBuf[3] = ledBuf[4] = ledBuf[5] = 0;
+  ledBuf[126] = ledBuf[127] = ledBuf[128] = 0;
+  WS2812_Write(&ws2812Dev2, TIM_CHANNEL_1, ledBuf, 129);
+}
 /* USER CODE END 0 */
 
 /**
@@ -74,6 +123,7 @@ int main(void)
   uint8_t str[30];
   uint8_t tempCnt = 0;
   uint8_t pressed = 0;
+  uint32_t i, j;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -98,12 +148,19 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   MX_USART2_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   Delay_Init(300);
   MyUART_SetOStream(USART3);
   MyUART_Init(&uart3, USART3, uartBuf3, 100);
   MyUART_Init(&uart2, USART2, uartBuf2, 100);
+  WS2812_Init(&ws2812Dev1, DMA2_Stream5, DMA_REQUEST_TIM4_UP, DMA2_Stream5_IRQn, &htim4);
+  WS2812_Init(&ws2812Dev2, DMA2_Stream6, DMA_REQUEST_TIM2_UP, DMA2_Stream6_IRQn, &htim2);
   printf("Init: %d>", PAJ7620_Init(GPIOF, 6, GPIOF, 7));
+  Delay_ms(50);
+  CameraLED_Set(0);
+  StripeLED_Set(0, 0, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -147,6 +204,38 @@ int main(void)
       if(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
       {
         pressed = 0;
+      }
+    }
+    if(MyUART_ReadUntilWithZero(&uart3, str, '>'))
+    {
+      if(str[0] == 'c') // camera light
+      {
+        if(str[1] == '1')
+        {
+          i = 1;
+          for(; i <= 0x40; i++)
+          {
+            CameraLED_Set(i);
+            Delay_ms(10);
+          }
+          for(; i <= 0x90; i += 2)
+          {
+            CameraLED_Set(i);
+            Delay_ms(10);
+          }
+        }
+        else
+        {
+          CameraLED_Set(0);
+        }
+      }
+      else if(str[0] == 's') // stripe
+      {
+        StripeLED_Set(str[1], str[2], str[3]);
+      }
+      else if(str[0] == 'f') // stripe flow
+      {
+        StripeLED_Flow(str[1], str[2], str[3]);
       }
     }
   }
@@ -209,7 +298,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void DMA2_Stream5_IRQHandler(void)
+{
+  WS2812_UpdateBuf();
+}
+void DMA2_Stream6_IRQHandler(void)
+{
+  WS2812_UpdateBuf();
+}
 /* USER CODE END 4 */
 
 /**

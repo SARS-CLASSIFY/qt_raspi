@@ -175,8 +175,10 @@ void CvCam::closeCam()
 
 void CvCam::getFrameAddr()
 {
-    if(roiFrame->cols != 0 && roiFrame->rows != 0)
+    if(roiFrame->cols != 0 && roiFrame->rows != 0){
         emit frameAddr(rawFrame, roiFrame, roiOfRawFrame);
-    else
+    }
+    else{
         emit frameAddr(rawFrame, nullptr, nullptr);
+    }
 }

@@ -29,21 +29,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     cvcam.cpp \
-        main.cpp \
-        mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp \
     camera.cpp \
     fix.cpp \
     music.cpp
 
 HEADERS += \
     cvcam.h \
-        mainwindow.h \
+    mainwindow.h \
     camera.h \
     fix.h \
     music.h
 
 FORMS += \
-        mainwindow.ui \
+    mainwindow.ui \
     camera.ui \
     fix.ui \
     music.ui
@@ -74,4 +74,11 @@ linux {
                 /usr/local/include/opencv4/opencv2 \
 }
 
-QMAKE_CXXFLAGS += -Wl,--stack,100000000
+
+
+#INCLUDEPATH += D:\OPENCV342\opencv\opencv-build\install\include\
+#               D:\OPENCV342\opencv\opencv-build\install\include\opencv2\
+#               D:\OPENCV342\opencv\opencv-build\install\include\opencv
+
+#LIBS += -L D:\OPENCV342\opencv\opencv-build\install\x86\mingw\lib\libopencv_*.a
+

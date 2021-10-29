@@ -96,12 +96,16 @@ private slots:
     void onSerialReadyRead();
 
     void main_page_set(Page page);
-
+    void changePage(int direction);
 
     //DHT11
     void DHT11_Data_Handle(QByteArray myhmi);
 
     void unlock();
+    //穿搭
+    void cloth_change(QLabel *label,QString fileaddress);
+    void cloth_recommend(QString wendu);
+
 private:
     Ui::MainWindow *ui;
     //personal
@@ -125,11 +129,17 @@ private:
     QSerialPort port;
 
     Page currentPage = InitPage;
-    bool locked = true;
+    bool locked = false;
 
     //界面绝对坐标
 
-    void changePage(int direction);
+    //穿搭图片路径
+    //图片路径
+    QString addrea = ":/resourses/weather/fall.png";
+    QString addreb = ":/resourses/weather/rain.png";
+    QString addrec = ":/resourses/weather/spring.png";
+    QString addred = ":/resourses/weather/sum.png";
+    QString addree = ":/resourses/weather/winter.png";
 };
 
 #endif // MAINWINDOW_H

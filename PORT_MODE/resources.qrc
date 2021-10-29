@@ -31,5 +31,10 @@
         <file>resourses/music/2.jpeg</file>
         <file>resourses/music/3.gif</file>
         <file>resourses/music/3.jpeg</file>
+        <file>resourses/weather/fall.png</file>
+        <file>resourses/weather/rain.png</file>
+        <file>resourses/weather/spring.png</file>
+        <file>resourses/weather/sum.png</file>
+        <file>resourses/weather/winter.png</file>
     </qresource>
 </RCC>
