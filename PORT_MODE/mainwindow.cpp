@@ -478,7 +478,7 @@ void MainWindow::onSerialReadyRead()
         else if(serialBuf == "back>")
             win4->on_firstSong_clicked();
 
-        else if(serialBuf == "key>")
+        else if(serialBuf == "key>" || serialBuf == "lock>")
         {
             locked = true;
             main_page_set(InitPage);
