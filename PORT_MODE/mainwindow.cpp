@@ -274,6 +274,12 @@ void MainWindow::change_to_fix()
     ui->page1->hide();
     win2->hide();
     win4->hide();
+
+
+    ui->labelGIF3->hide();
+    ui->my_txt1->hide();
+    ui->my_txt2->hide();
+
     win3->show();
 
 
@@ -289,6 +295,11 @@ void MainWindow::change_to_camera()
 //    win2 = new camera;
     //this->hide();
     ui->page1->hide();
+    ui->labelGIF3->hide();
+    ui->my_txt1->hide();
+    ui->my_txt2->hide();
+
+
     win3->hide();
     win4->hide();
     win2->show();
@@ -301,6 +312,11 @@ void MainWindow::change_to_music()
     ui->page1->hide();
     win3->hide();
     win2->hide();
+
+    ui->labelGIF3->hide();
+    ui->my_txt1->hide();
+    ui->my_txt2->hide();
+
     win4->show();
 
 }
@@ -436,17 +452,17 @@ void MainWindow::onSerialReadyRead()
         }
 
 
-        if(serialBuf == "8>")
+        if(serialBuf == "1>")
         {
             changePage(-1);
         }
-        else if(serialBuf == "4>")
+        else if(serialBuf == "2>")
         {
             changePage(1);
         }
-        else if(serialBuf == "1>")
+        else if(serialBuf == "4>")
             win3->pic_change(1);
-        else if(serialBuf == "2>")
+        else if(serialBuf == "8>")
             win3->pic_change(0);
 
         else if(serialBuf == "get>")//获取天气信息
@@ -537,8 +553,9 @@ void MainWindow::changePage(int direction)
 
 void MainWindow::unlock()
 {
+    if(locked)
+        port.write("f\x05\x40\x05>", 5);
     locked = false;
-    port.write("f\x05\x40\x05>", 5);
 }
 
 
@@ -595,9 +612,14 @@ void MainWindow::cloth_recommend(QString wendu)
 
 
     ui->labelGif->hide();
-    ui->labelGIF3->show();
-    ui->my_txt1->show();
-    ui->my_txt2->show();
+    if(locked == false){
+        ui->labelGIF3->show();
+        ui->my_txt1->show();
+        ui->my_txt2->show();
+    }
+    else{
+        ui->labelGif->show();
+    }
 }
 
 

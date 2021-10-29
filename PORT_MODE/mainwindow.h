@@ -129,7 +129,7 @@ private:
     QSerialPort port;
 
     Page currentPage = InitPage;
-    bool locked = false;
+    bool locked = true;
 
     //界面绝对坐标
 
