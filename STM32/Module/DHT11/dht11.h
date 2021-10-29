@@ -6,10 +6,10 @@
 
 // you can read it as fast as you can, but the valid interval is around 1200ms
 
-#define DHT11_GPIO_IN()  {GPIOD->MODER&=~(3<<(4*2));GPIOD->MODER|=0<<(4*2);} //PE2 In
-#define DHT11_GPIO_OUT() {GPIOD->MODER&=~(3<<(4*2));GPIOD->MODER|=1<<(4*2);} //PE2 Out
-#define DHT11_GPIO_WRITE(n)  (n?HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_SET):HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_RESET))
-#define DHT11_GPIO_READ()    HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_4)
+#define DHT11_GPIO_IN()  {GPIOC->MODER&=~(3<<(2*2));GPIOC->MODER|=0<<(2*2);} //PC2 In
+#define DHT11_GPIO_OUT() {GPIOC->MODER&=~(3<<(2*2));GPIOC->MODER|=1<<(2*2);} //PC2 Out
+#define DHT11_GPIO_WRITE(n)  (n?HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET):HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET))
+#define DHT11_GPIO_READ()    HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2)
 
 void DHT11_Init(void);
 uint8_t DHT11_Measure(uint8_t* tempd, uint8_t* tempf, uint8_t* humid, uint8_t* humif); // return whether the result is valid

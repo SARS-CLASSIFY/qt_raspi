@@ -11,13 +11,13 @@ void DHT11_Init(void)
 	for (i = 0; i < 40; i++)
 		DHT11_rawData[i] = 0xFFu;
   
-	__HAL_RCC_GPIOD_CLK_ENABLE(); // Enable GPIOE
+	__HAL_RCC_GPIOC_CLK_ENABLE(); // Enable GPIOC
 
-	GPIO_Initer.Pin = GPIO_PIN_4;
+	GPIO_Initer.Pin = GPIO_PIN_2;
 	GPIO_Initer.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_Initer.Pull = GPIO_PULLUP;
 	GPIO_Initer.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(GPIOD, &GPIO_Initer);
+	HAL_GPIO_Init(GPIOC, &GPIO_Initer);
 }
 
 uint8_t DHT11_Measure(uint8_t *tempd, uint8_t *tempf, uint8_t *humid, uint8_t *humif)
